@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Registration</title>
+    <style>
+        :root { --primary: #3498db; --success: #2ecc71; --dark: #2c3e50; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: var(--dark); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; color: #555; }
+        .dob-inputs { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 10px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .age-display { background: #e8f4fd; padding: 10px; border-radius: 8px; margin-top: 10px; font-weight: bold; color: var(--primary); text-align: center; }
+        .upload-card { border: 2px dashed #cbd5e0; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; margin-top: 10px; }
+        .upload-card.success { border-color: var(--success); background: #f0fff4; }
+        .btn-submit { width: 100%; padding: 15px; background: #ccc; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: not-allowed; margin-top: 20px; }
+        .btn-submit.active { background: var(--primary); cursor: pointer; }
+        .profile-pic { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="regForm">
+    <h2>🚚 Partner Join Karein</h2>
+    <div class="form-group">
+        <label>Pura Naam</label>
+        <input type="text" id="userName" placeholder="Aadhar ke hisaab se" oninput="saveAndValidate()">
+    </div>
+    <div class="form-group">
+        <label>Janm Tithi (DOB)</label>
+        <div class="dob-inputs">
+            <input type="number" id="day" placeholder="DD" oninput="saveAndValidate()">
+            <input type="number" id="month" placeholder="MM" oninput="saveAndValidate()">
+            <input type="number" id="year" placeholder="YYYY" oninput="saveAndValidate()">
+        </div>
+        <div id="ageResult" class="age-display" style="display:none;">Umar: <span id="finalAge">0</span> Saal</div>
+    </div>
+    <div class="upload-card" id="card1" onclick="document.getElementById('img1').click()">
+        <span id="label-img1">👤 Apni Photo Upload Karein</span>
+        <input type="file" id="img1" hidden onchange="fileDone('img1')">
+    </div>
+    <button id="submitBtn" class="btn-submit" disabled onclick="submitForm()">Submit Karein</button>
+</div>
+
+<div class="container" id="profileDisplay" style="display:none; text-align: center;">
+    <img id="p-img" class="profile-pic" src="">
+    <h2 id="p-name"></h2>
+    <div id="statusBox" style="font-weight: bold; font-size: 1.2rem; margin-top: 15px;"></div>
+</div>
+
+<script>
+    let userAge = 0; let fileReady = false;
+
+    window.onload = function() {
+        if(localStorage.getItem('registered') === 'true') showProfile();
+    };
+
+    function saveAndValidate() {
+        const n = document.getElementById('userName').value;
+        const y = document.getElementById('year').value;
+        if (y > 1900) {
+            userAge = new Date().getFullYear() - y;
+            document.getElementById('ageResult').style.display = 'block';
+            document.getElementById('finalAge').innerText = userAge;
+        }
+        const btn = document.getElementById('submitBtn');
+        if (n.length > 2 && userAge >= 18 && fileReady) {
+            btn.disabled = false; btn.classList.add('active');
+        }
+    }
+
+    function fileDone(id) {
+        fileReady = true;
+        document.getElementById('card1').classList.add('success');
+        document.getElementById('label-img1').innerText = "✅ Photo Uploaded";
+        const reader = new FileReader();
+        reader.onload = (e) => localStorage.setItem('p-pic', e.target.result);
+        reader.readAsDataURL(document.getElementById(id).files[0]);
+        saveAndValidate();
+    }
+
+    function submitForm() {
+        localStorage.setItem('name', document.getElementById('userName').value);
+        localStorage.setItem('age', userAge);
+        localStorage.setItem('status', 'pending');
+        localStorage.setItem('registered', 'true');
+        showProfile();
+    }
+
+    function showProfile() {
+        document.getElementById('regForm').style.display = 'none';
+        document.getElementById('profileDisplay').style.display = 'block';
+        document.getElementById('p-name').innerText = localStorage.getItem('name');
+        document.getElementById('p-img').src = localStorage.getItem('p-pic');
+        const status = localStorage.getItem('status');
+        const sBox = document.getElementById('statusBox');
+        if(status === 'pending') { sBox.innerText = "⏳ Status: Verification Pending"; sBox.style.color = "orange"; }
+        else { sBox.innerText = "✅ Status: Approved"; sBox.style.color = "green"; }
+    }
+</script>
+</body>
+</html>
