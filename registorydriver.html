@@ -3,30 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homely Bite - Registration</title>
+    <title>Delivery Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #3498db; --success: #2ecc71; --dark: #2c3e50; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; padding-bottom: 80px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; box-sizing: border-box; }
-        .container { width: 100%; max-width: 450px; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h2 { text-align: center; color: var(--dark); margin-top: 0; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: bold; margin-bottom: 8px; color: #555; }
-        .dob-inputs { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 10px; }
-        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--primary); }
-        .age-display { background: #e8f4fd; padding: 10px; border-radius: 8px; margin-top: 10px; font-weight: bold; color: var(--primary); text-align: center; }
-        .upload-card { border: 2px dashed #cbd5e0; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .upload-card.success { border-color: var(--success); background: #f0fff4; color: var(--success); }
-        .btn-submit { width: 100%; padding: 15px; background: #ccc; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: not-allowed; margin-top: 20px; transition: 0.3s; }
-        .btn-submit.active { background: var(--primary); cursor: pointer; }
-        .profile-pic { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--primary); object-fit: cover; margin-bottom: 10px; }
-        .status-box { margin-top: 15px; padding: 15px; border-radius: 8px; font-weight: bold; }
-        
-        .credits-section { text-align: center; margin-top: auto; color: #777; }
-        .credits-section h4 { margin: 0; color: #333; }
-        .credits-section small { font-size: 11px; opacity: 0.7; }
+        :root { --primary: #d32f2f; --bg: #f2f2f2; --success: #28a745; --blue: #007bff; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; padding-bottom: 90px; }
 
+        .header { background: var(--primary); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .header h1 { margin: 0; font-size: 22px; }
+        .view { padding: 15px; }
+
+        .order-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); position: relative; }
+        .status-badge { position: absolute; top: 15px; right: 15px; background: #eee; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .info-item b { font-size: 11px; color: #888; display: block; text-transform: uppercase; margin-bottom: 2px; }
+        .info-item p { margin: 0; font-size: 15px; font-weight: 600; }
+        .items-box { background: #fafafa; padding: 10px; border-radius: 8px; font-size: 14px; border: 1px dashed #ddd; margin: 12px 0; }
+        .bill-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid #eee; margin-bottom: 10px; }
+        .bill-amt { font-size: 20px; font-weight: bold; color: var(--success); }
+
+        .otp-container { display: flex; gap: 10px; }
+        .otp-input { flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; text-align: center; outline: none; }
+        .verify-btn { background: var(--primary); color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        
+        .qr-box { display: none; text-align: center; margin-top: 10px; padding: 15px; background: #f0f8ff; border: 2px solid var(--blue); border-radius: 12px; }
+        .qr-box img { width: 150px; height: 150px; mix-blend-mode: multiply; margin: 10px 0; }
+        
+        .empty-msg { text-align: center; margin-top: 50px; color: #999; }
+        .sim-btn { display: block; width: 100%; max-width: 250px; margin: 20px auto; padding: 12px; background: #333; color: white; border: none; border-radius: 25px; cursor: pointer; }
+
+        .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; box-sizing: border-box; }
+
+        /* Credits & Navbar */
+        .credits-section { text-align: center; color: #777; margin-top: 20px; }
+        .credits-section h4 { margin: 0; color: #333; }
         .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid #ddd; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
         .nav-item { text-decoration: none; color: #888; text-align: center; font-size: 10px; }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
@@ -35,127 +46,111 @@
 </head>
 <body>
 
-<div class="container" id="regForm">
-    <h2>🚚 Partner Registration</h2>
-    <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="userName" placeholder="As per Aadhar Card" oninput="validateForm()">
+    <div id="auth-check" class="auth-overlay">
+        <i class="fas fa-lock" style="font-size: 50px; color: #ccc; margin-bottom: 20px;"></i>
+        <h2>Access Restricted</h2>
+        <p id="auth-msg">Checking your partner status...</p>
+        <button onclick="window.location.href='index.html'" style="padding:10px 20px; margin-top:20px; background:#3498db; color:white; border:none; border-radius:5px; cursor:pointer;">Go to Registration</button>
     </div>
-    <div class="form-group">
-        <label>Date of Birth</label>
-        <div class="dob-inputs">
-            <input type="number" id="day" placeholder="DD" oninput="validateForm()">
-            <input type="number" id="month" placeholder="MM" oninput="validateForm()">
-            <input type="number" id="year" placeholder="YYYY" oninput="validateForm()">
+
+    <div class="header">
+        <h1>HOMELY BITE</h1>
+        <p>Delivery Dashboard</p>
+    </div>
+
+    <div id="main-view" class="view">
+        <h4 style="margin: 0 0 15px 5px; display:flex; justify-content:space-between; align-items:center;">
+            <span><i class="fas fa-motorcycle"></i> Active Orders</span>
+            <span id="driver-name-display" style="font-size:12px; font-weight:normal; background:rgba(0,0,0,0.1); padding:3px 8px; border-radius:10px;"></span>
+        </h4>
+        
+        <div id="delivery-list"></div>
+        <button class="sim-btn" onclick="window.location.href='menu.html'">+ Place Test Order (Customer App)</button>
+        
+        <div class="credits-section">
+            <h4>Created by Suraj</h4>
+            <small>Hosted by Shaurya</small>
         </div>
-        <div id="ageResult" class="age-display" style="display:none;">Age: <span id="finalAge">0</span> Years</div>
     </div>
-    <div class="upload-card" id="card1" onclick="document.getElementById('img1').click()">
-        <span id="label-img1">👤 Upload Profile Photo</span>
-        <input type="file" id="img1" hidden accept="image/*" onchange="handleFile('img1')">
+
+    <div class="navbar">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-user-plus"></i> Register
+        </a>
+        <a href="dashboard.html" class="nav-item active">
+            <i class="fas fa-motorcycle"></i> Delivery
+        </a>
+        <a href="owner.html" class="nav-item">
+            <i class="fas fa-user-shield"></i> Owner
+        </a>
+        <a href="menu.html" class="nav-item">
+            <i class="fas fa-utensils"></i> Order Food
+        </a>
     </div>
-    <button id="submitBtn" class="btn-submit" disabled onclick="submitRegistration()">Submit Application</button>
-</div>
 
-<div class="container" id="profileDisplay" style="display:none; text-align: center;">
-    <img id="p-img" class="profile-pic" src="">
-    <h2 id="p-name"></h2>
-    <div id="statusBox" class="status-box"></div>
-    <p style="color: #777; font-size: 14px;">Please ask the Owner to approve your account.</p>
-</div>
+    <script>
+        window.onload = () => {
+            const status = localStorage.getItem('hb_status');
+            const name = localStorage.getItem('hb_name');
 
-<div class="credits-section">
-    <h4>Created by Suraj</h4>
-    <small>Hosted by Shaurya</small>
-</div>
+            if (status === 'approved') {
+                document.getElementById('auth-check').style.display = 'none';
+                document.getElementById('driver-name-display').innerText = "Hi, " + name.split(' ')[0];
+                loadAllOrders();
+                setInterval(loadAllOrders, 3000); // Auto Refresh orders
+            } else if (status === 'pending') {
+                document.getElementById('auth-msg').innerText = "Account pending approval.";
+            } else {
+                document.getElementById('auth-msg').innerText = "Please register first.";
+            }
+        };
 
-<div class="navbar">
-    <a href="index.html" class="nav-item active">
-        <i class="fas fa-user-plus"></i> Register
-    </a>
-    <a href="dashboard.html" class="nav-item">
-        <i class="fas fa-motorcycle"></i> Delivery
-    </a>
-    <a href="owner.html" class="nav-item">
-        <i class="fas fa-user-shield"></i> Owner
-    </a>
-    <a href="menu.html" class="nav-item">
-        <i class="fas fa-utensils"></i> Order Food
-    </a>
-</div>
+        function loadAllOrders() {
+            // Read shared DB
+            const orders = JSON.parse(localStorage.getItem('hb_orders') || "[]");
+            const listContainer = document.getElementById('delivery-list');
+            if (orders.length === 0) { listContainer.innerHTML = `<div class="empty-msg">No active orders.<br><small>Open Customer App to place one.</small></div>`; return; }
 
-<script>
-    let userAge = 0; let fileBase64 = null;
+            listContainer.innerHTML = orders.reverse().map((order) => `
+                <div class="order-card" id="card-${order.id}">
+                    <div class="status-badge" style="color:${order.status === 'delivered' ? 'green' : 'orange'}">
+                        ${order.status === 'delivered' ? 'Done' : 'On Way'}
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item"><b>Customer</b><p>${order.customerName}</p></div>
+                        <div class="info-item"><b>Phone</b><p>${order.phone}</p></div>
+                    </div>
+                    <div class="info-item" style="margin-bottom:8px;"><b>Address</b><p>${order.address}</p></div>
+                    <div class="items-box"><b>#${order.id.toString().slice(-4)}:</b> ${order.items}</div>
+                    <div class="bill-row"><span>Collect:</span><span class="bill-amt">₹${order.total}</span></div>
 
-    window.onload = function() {
-        if(localStorage.getItem('hb_registered') === 'true') { showProfile(); }
-    };
-
-    function validateForm() {
-        const name = document.getElementById('userName').value;
-        const y = document.getElementById('year').value;
-        const currentYear = new Date().getFullYear();
-        
-        if (y > 1900 && y <= currentYear) {
-            userAge = currentYear - y;
-            document.getElementById('ageResult').style.display = 'block';
-            document.getElementById('finalAge').innerText = userAge;
-        } else {
-            userAge = 0;
+                    <div id="otp-area-${order.id}" style="${order.status === 'delivered' ? 'display:none' : 'block'}">
+                        <p style="font-size:12px; color:#777;">Ask Customer for OTP (It is <b>${order.otp}</b> for demo)</p>
+                        <div class="otp-container">
+                            <input type="number" id="input-otp-${order.id}" class="otp-input" placeholder="Enter OTP">
+                            <button class="verify-btn" onclick="verifyOrder(${order.id}, ${order.otp})">Verify</button>
+                        </div>
+                    </div>
+                    <div class="qr-box" id="qr-area-${order.id}" style="${order.status === 'delivered' ? 'display:block' : 'none'}">
+                        <span style="color:#007bff; font-weight:bold;">PAYMENT RECEIVED</span><br>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Paid${order.id}">
+                    </div>
+                </div>
+            `).join('');
         }
 
-        const btn = document.getElementById('submitBtn');
-        if (name.length > 2 && userAge >= 18 && fileBase64) {
-            btn.disabled = false; btn.classList.add('active');
-        } else {
-            btn.disabled = true; btn.classList.remove('active');
+        function verifyOrder(orderId, correctOtp) {
+            const inputVal = document.getElementById(`input-otp-${orderId}`).value;
+            // Demo mode: accept correct OTP or blank (for easy testing)
+            if (inputVal == correctOtp) {
+                let orders = JSON.parse(localStorage.getItem('hb_orders') || "[]");
+                // Update status in Shared DB
+                orders = orders.map(o => { if(o.id === orderId) o.status = 'delivered'; return o; });
+                localStorage.setItem('hb_orders', JSON.stringify(orders));
+                loadAllOrders();
+                alert("OTP Verified! Order marked as Delivered.");
+            } else { alert("Wrong OTP"); }
         }
-    }
-
-    function handleFile(id) {
-        const file = document.getElementById(id).files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                fileBase64 = e.target.result; 
-                document.getElementById('card1').classList.add('success');
-                document.getElementById('label-img1').innerText = "✅ Photo Selected";
-                validateForm();
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function submitRegistration() {
-        localStorage.setItem('hb_name', document.getElementById('userName').value);
-        localStorage.setItem('hb_age', userAge);
-        localStorage.setItem('hb_status', 'pending');
-        localStorage.setItem('hb_photo', fileBase64);
-        localStorage.setItem('hb_registered', 'true');
-        showProfile();
-    }
-
-    function showProfile() {
-        document.getElementById('regForm').style.display = 'none';
-        document.getElementById('profileDisplay').style.display = 'block';
-        document.getElementById('p-name').innerText = localStorage.getItem('hb_name');
-        document.getElementById('p-img').src = localStorage.getItem('hb_photo');
-        
-        const status = localStorage.getItem('hb_status');
-        const sBox = document.getElementById('statusBox');
-        
-        if(status === 'pending') {
-            sBox.innerText = "⏳ Status: Verification Pending";
-            sBox.style.background = "#fff3cd"; sBox.style.color = "#856404";
-        } else if (status === 'approved') {
-            sBox.innerText = "✅ Status: Approved!";
-            sBox.style.background = "#d4edda"; sBox.style.color = "#155724";
-        } else {
-            sBox.innerText = "❌ Status: Rejected";
-            sBox.style.background = "#f8d7da"; sBox.style.color = "#721c24";
-            setTimeout(() => { localStorage.clear(); location.reload(); }, 3000);
-        }
-    }
-</script>
+    </script>
 </body>
 </html>
