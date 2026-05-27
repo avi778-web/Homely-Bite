@@ -3,152 +3,550 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homely Bite - Order Food</title>
+    <title>Homely Bite</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #d32f2f; --bg: #f4f4f4; --success: #28a745; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); overflow-x: hidden; padding-bottom: 80px; }
-        #splash { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        :root { 
+            --primary: #d32f2f; 
+            --bg: #f4f4f4; 
+            --success: #28a745; 
+            --text-color: #333333; 
+            --card-bg: #ffffff; 
+            --border-color: #eeeeee;
+            --app-font: 'Segoe UI', sans-serif;
+        }
+        [data-theme="dark"] { --bg: #121212; --card-bg: #1e1e1e; --text-color: #f4f4f4; --border-color: #333333; }
+
+        body { font-family: var(--app-font); margin: 0; background: var(--bg); overflow-x: hidden; color: var(--text-color); transition: background 0.3s, color 0.3s; }
+        #splash{position:fixed;inset:0;background:url("https://th.bing.com/th/id/OIP.MMtOF9wWJhowGcUwb8r5YgHaEK?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3") center center/cover no-repeat;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s ease;}#splash::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.35);} .logo-box,#splash h1{position:relative;z-index:2;}
         .logo-box { width: 90px; height: 90px; background: var(--primary); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 45px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4); }
         
-        /* Reg Screen */
-        #reg-screen { position: fixed; inset: 0; background: white; z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .reg-input { width: 85%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
-        .reg-btn { width: 85%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; }
+        #reg-screen { position: fixed; inset: 0; background: var(--card-bg); z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .reg-input { width: 85%; padding: 12px; margin: 8px 0; border: 1px solid var(--border-color); border-radius: 8px; font-size: 16px; background: var(--bg); color: var(--text-color); font-family: inherit; }
+        .reg-btn { width: 85%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
         
         .header { background: var(--primary); color: white; padding: 15px 10px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .header h1 { margin: 0; font-size: 26px; text-transform: uppercase; letter-spacing: 1.5px; }
+        .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1.5px; padding: 0 40px; }
+        .header p { margin: 2px 0 0; font-size: 13px; font-weight: normal; opacity: 0.9; font-style: italic; }
         
-        .view { display: none; padding: 12px; }
+        .menu-toggle { position: absolute; left: 15px; top: 18px; background: rgba(255, 255, 255, 0.2); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+        .header-actions { position: absolute; right: 15px; top: 18px; display: flex; gap: 8px; }
+        .action-btn { background: rgba(255, 255, 255, 0.2); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; }
+
+        .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--card-bg); z-index: 2000; box-shadow: 2px 0 15px rgba(0,0,0,0.2); transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+        .sidebar.open { left: 0; }
+        .sidebar-header { background: var(--primary); color: white; padding: 30px 20px 20px 20px; display: flex; flex-direction: column; position: relative; }
+        .sidebar-header .close-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+        .sidebar-header .user-info h3 { margin: 10px 0 2px 0; font-size: 18px; }
+        .sidebar-header .user-info p { margin: 0; font-size: 12px; opacity: 0.8; }
+        .sidebar-menu { padding: 15px 0; flex: 1; overflow-y: auto; }
+        .sidebar-item { display: flex; align-items: center; padding: 14px 24px; color: var(--text-color); text-decoration: none; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+        .sidebar-item:hover { background: rgba(0,0,0,0.04); }
+        .sidebar-item i { width: 30px; font-size: 18px; color: var(--primary); opacity: 0.9; }
+        .sidebar-divider { height: 1px; background: var(--border-color); margin: 10px 0; }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1999; display: none; opacity: 0; transition: opacity 0.3s; }
+        .sidebar-overlay.show { display: block; opacity: 1; }
+
+        .view { display: none; padding: 12px; padding-bottom: 120px; }
         .view.active { display: block; }
+        .section-title { font-size: 18px; font-weight: bold; margin: 15px 5px 10px; color: var(--text-color); border-left: 4px solid var(--primary); padding-left: 10px; }
         
-        .section-title { font-size: 20px; font-weight: bold; margin: 15px 5px 10px; color: #333; border-left: 4px solid var(--primary); padding-left: 10px; }
-        
-        /* Food Card */
-        .food-card { background: white; margin-bottom: 15px; padding: 12px; border-radius: 12px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; }
-        .food-card img { width: 75px; height: 75px; border-radius: 10px; object-fit: cover; margin-right: 15px; background: #eee; }
+        .food-card { background: var(--card-bg); margin-bottom: 12px; padding: 10px; border-radius: 12px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
+        .food-card img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; margin-right: 12px; background: #f9f9f9; }
         .food-info { flex: 1; }
+        .food-name { font-size: 15px; color: var(--text-color); margin-bottom: 3px; }
         
         .qty-controls { display: flex; align-items: center; gap: 8px; }
-        .qty-btn { background: white; color: var(--primary); border: 1.5px solid var(--primary); width: 28px; height: 28px; border-radius: 6px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .qty-val { font-weight: bold; min-width: 15px; text-align: center; }
-        .add-btn { background: white; color: var(--primary); border: 1.5px solid var(--primary); padding: 6px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .qty-btn { background: var(--card-bg); color: var(--primary); border: 1.5px solid var(--primary); width: 26px; height: 26px; border-radius: 5px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .qty-val { font-weight: bold; min-width: 15px; text-align: center; color: var(--text-color); }
+        .add-btn { background: var(--card-bg); color: var(--primary); border: 1.5px solid var(--primary); padding: 5px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; font-family: inherit; }
 
-        /* Profile */
-        .profile-container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 10px; text-align: center; }
+        .profile-container { background: var(--card-bg); padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 10px; text-align: center; border: 1px solid var(--border-color); }
         .profile-pic-container { position: relative; width: 100px; height: 100px; margin: 0 auto 15px; }
         #p-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); }
         
-        .user-meta { text-align: left; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
-        .user-meta label { font-size: 12px; color: #888; display: block; }
-        .user-meta b { font-size: 16px; color: #333; }
+        .rating-stars { display: flex; justify-content: center; gap: 10px; margin: 15px 0; font-size: 30px; }
+        .rating-stars i { color: #ccc; cursor: pointer; transition: color 0.2s; }
+        .rating-stars i.active { color: #ffc107; }
+        .feedback-input { width: 90%; height: 80px; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg); color: var(--text-color); resize: none; margin-bottom: 15px; font-family: inherit; }
 
-        .order-container { background: white; border-radius: 15px; padding: 15px; margin-bottom: 20px; border: 1px solid #ddd; position: relative; }
+        .order-container { background: var(--card-bg); border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); display: flex; border-top: 1px solid var(--border-color); height: 60px; z-index: 1000; }
+        .nav-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; color: #888; cursor: pointer; }
+        .nav-tab.active { color: var(--primary); font-weight: bold; }
         
-        /* Navigation */
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid #ddd; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
-        .nav-item { text-decoration: none; color: #888; text-align: center; font-size: 10px; flex: 1; }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
-        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .checkout { position: fixed; bottom: 75px; width: 90%; left: 5%; background: #222; color: white; padding: 12px; border-radius: 10px; display: none; justify-content: space-between; align-items: center; z-index: 900; }
+        .otp-span { background: var(--bg) !important; color: var(--text-color); }
 
-        .checkout { position: fixed; bottom: 80px; width: 92%; left: 4%; background: #222; color: white; padding: 14px; border-radius: 12px; display: none; justify-content: space-between; align-items: center; z-index: 900; box-sizing: border-box; }
+        /* Settings Custom Component Styles */
+        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 5px; border-bottom: 1px solid var(--border-color); text-align: left; }
+        .settings-label { font-size: 14px; font-weight: 500; display: flex; align-items: center; }
+        .settings-select { padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text-color); font-size: 13px; font-family: inherit; outline: none; }
+        .settings-btn-danger { background: #dc3545; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; width: 100%; margin-top: 15px; font-family: inherit; }
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .3s; border-radius: 24px; }
+        .toggle-slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .toggle-slider { background-color: var(--primary); }
+        input:checked + .toggle-slider:before { transform: translateX(20px); }
     </style>
 </head>
 <body>
-    <div id="splash"><div class="logo-box"><i class="fas fa-utensils"></i></div><h1 style="color:var(--primary); margin:0;">Homely Bite</h1></div>
+    <!-- Splash Screen Layout -->
+    <div id="splash">
+        <div class="logo-box"><i class="fas fa-utensils"></i></div>
+        <h1 style="color:var(--primary); margin:0;">Homely Bite</h1>
+    </div>
     
+    <!-- Account Setup Form Overlay -->
     <div id="reg-screen">
-        <h2 style="color: var(--primary);">Create Account</h2>
+        <h2 id="reg-title" style="color: var(--primary);">Create Account</h2>
         <input type="text" id="u-name" class="reg-input" placeholder="Full Name">
         <input type="tel" id="u-phone" class="reg-input" placeholder="Mobile Number">
         <input type="text" id="u-addr" class="reg-input" placeholder="Delivery Address">
-        <button class="reg-btn" onclick="saveUser()">Register Now</button>
+        <button id="reg-btn-text" class="reg-btn" onclick="saveUser()">Register Now</button>
     </div>
 
-    <div class="header"><h1>HOMELY BITE</h1><p>Ghar ke hath ka Swad</p></div>
+    <!-- Main Navigation Drawers -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="close-btn" onclick="toggleSidebar(false)"><i class="fas fa-times"></i></button>
+            <div class="user-info">
+                <h3 id="side-username">Guest User</h3>
+                <p id="side-userphone">---</p>
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-item" onclick="handleSideClick('home')"><i class="fas fa-utensils"></i> <span class="lng-side-menu">Menu</span></div>
+            <div class="sidebar-item" onclick="handleSideClick('orders')"><i class="fas fa-truck"></i> <span class="lng-side-orders">My Orders</span></div>
+            <div class="sidebar-item" onclick="handleSideClick('me')"><i class="fas fa-user"></i> <span class="lng-side-profile">My Profile</span></div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-item" onclick="handleSideClick('settings')"><i class="fas fa-cog"></i> <span class="lng-side-settings">Settings</span></div>
+            
+            <!-- Delivery Partner Link Fixed to open safely -->
+            <a href="dashboard.html" class="sidebar-item" style="text-decoration: none;" onclick="toggleSidebar(false)">
+                <i class="fas fa-motorcycle"></i> <span class="lng-side-delivery">Delivery Partner</span>
+            </a>
+            
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-item" onclick="handleSideClick('rate')"><i class="fas fa-star"></i> <span class="lng-side-rate">Rate Us</span></div>
+            <div class="sidebar-item" onclick="handleSideClick('follow')"><i class="fab fa-instagram"></i> <span class="lng-side-follow">Follow Us</span></div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-item" onclick="logout()" style="color: red;"><i class="fas fa-sign-out-alt" style="color: red;"></i> <span class="lng-side-logout">Log Out</span></div>
+        </div>
+    </div>
 
+    <!-- Application Top Bar Header -->
+    <div class="header">
+        <button class="menu-toggle" onclick="toggleSidebar(true)"><i class="fas fa-bars"></i></button>
+        <h1>HOMELY BITE</h1>
+        <p id="sub-tagline">Ghar ke hath ka Swad</p>
+        <div class="header-actions">
+            <button class="action-btn" onclick="toggleLanguage()" title="Change Language"><i class="fas fa-globe"></i></button>
+            <button class="action-btn" onclick="toggleTheme()" id="theme-btn"><i class="fas fa-sun"></i></button>
+        </div>
+    </div>
+
+    <!-- Core Dynamic Module Layout Partials -->
     <div id="home-view" class="view active">
-        <div class="section-title">FOOD MENU</div>
+        <div class="section-title" id="title-menu">OUR FULL MENU</div>
         <div id="menu-list"></div>
     </div>
 
     <div id="orders-view" class="view">
-        <div class="section-title">📦 MY ORDERS</div>
+        <div class="section-title" id="title-orders">📦 MY ORDERS</div>
         <div id="orders-list"></div>
     </div>
 
     <div id="me-view" class="view">
-        <div class="section-title">👤 PROFILE</div>
+        <div class="section-title" id="title-profile">👤 PROFILE</div>
         <div class="profile-container">
             <div class="profile-pic-container">
                 <img id="p-img" src="https://via.placeholder.com/100?text=User" alt="Profile">
-                <label onclick="document.getElementById('img-upload').click()" class="pic-edit" style="position:absolute; bottom:0; right:0; background:var(--primary); color:white; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; border:2px solid white; cursor:pointer;"><i class="fas fa-camera"></i></label>
+                <label for="img-upload" style="position:absolute; bottom:0; right:0; background:var(--primary); color:white; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; border:2px solid white; cursor:pointer;"><i class="fas fa-camera"></i></label>
                 <input type="file" id="img-upload" hidden accept="image/*" onchange="uploadPic(this)">
             </div>
-            <div class="user-meta"><label>Name</label><b id="p-name">--</b></div>
-            <div class="user-meta"><label>Phone</label><b id="p-phone">--</b></div>
-            <div class="user-meta"><label>Address</label><b id="p-addr">--</b></div>
-            <button onclick="logout()" style="width:100%; padding:10px; border:1px solid #ddd; background:none; border-radius:8px; color:red; font-weight:bold;">Log Out / Edit</button>
+            <div id="profile-details" style="text-align:left;">
+                <p><b class="lng-p-name">Name:</b> <span id="p-name">--</span></p>
+                <p><b class="lng-p-phone">Phone:</b> <span id="p-phone">--</span></p>
+                <p><b class="lng-p-addr">Address:</b> <span id="p-addr">--</span></p>
+            </div>
+            <button id="logout-edit-btn" onclick="logout()" style="width:100%; padding:10px; border:1px solid var(--border-color); background:none; border-radius:8px; color:red; font-weight:bold; margin-top:10px; cursor:pointer;">Log Out / Edit</button>
         </div>
     </div>
 
-    <div class="checkout" id="cart-bar"><span id="total-val">Total: ₹0</span><button onclick="placeOrder()" style="background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold;">Order Now</button></div>
-
-    <div class="navbar">
-        <a href="javascript:void(0)" onclick="tab('home', this)" class="nav-item active"><i class="fas fa-utensils"></i>Menu</a>
-        <a href="javascript:void(0)" onclick="tab('orders', this)" class="nav-item"><i class="fas fa-truck"></i>Orders</a>
-        <a href="javascript:void(0)" onclick="tab('me', this)" class="nav-item"><i class="fas fa-user"></i>Me</a>
-        <a href="driver registery.html" class="nav-item" style="border-left:1px solid #eee;"><i class="fas fa-id-card"></i>Partner</a>
+    <!-- Universal Flexible Shell View Layer Configuration Container -->
+    <div id="dynamic-view" class="view">
+        <div class="section-title" id="dynamic-title">PAGE</div>
+        <div id="dynamic-content-area"></div>
     </div>
 
-    <script>
-        const dishes = [
-            {n: "Special Veg Thali", p: 90}, {n: "Aalu Puri (5 Pcs)", p: 50}, {n: "Chole Bhature", p: 80}, {n: "Chicken Biryani", p: 180},
-            {n: "Paneer Butter Masala", p: 170}, {n: "Butter Chicken", p: 230}, {n: "Dal Makhani", p: 130}, {n: "Veg Chowmein", p: 80},
-            {n: "Veg Momos (10pc)", p: 70}, {n: "Butter Naan", p: 40}, {n: "Dal Fry", p: 90}, {n: "Matar Paneer", p: 150},
-            {n: "Egg Curry (2pc)", p: 110}, {n: "Chicken Curry", p: 200}, {n: "Jeera Rice", p: 70}, {n: "Mix Veg", p: 120},
-            {n: "Shahi Paneer", p: 180}, {n: "Tandoori Roti", p: 12}, {n: "Butter Roti", p: 15}, {n: "Masala Dosa", p: 100},
-            {n: "Cold Coffee", p: 60}, {n: "Gulab Jamun (2pc)", p: 40}, {n: "Veg Fried Rice", p: 90}, {n: "Chicken Kadhai", p: 240}, {n: "Honey Chilli Potato", p: 120}
-        ];
-        let cart = {}; let total = 0;
+    <!-- Shopping Summary Strip Panel Dock -->
+    <div class="checkout" id="cart-bar">
+        <span id="total-val">Total: ₹0</span>
+        <button id="order-now-btn" onclick="placeOrder()" style="background: var(--success); color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor:pointer;">Order Now</button>
+    </div>
 
-        window.onload = () => {
-            setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 1500);
-            if(!localStorage.getItem('hUser')) {
-                document.getElementById('reg-screen').style.display = 'flex';
-            } else {
-                updateProfile();
+    <!-- Primary Footer Navigation Framework Bar -->
+    <div class="bottom-nav">
+        <div class="nav-tab active" onclick="tab('home', this)"><i class="fas fa-utensils"></i><span class="lng-tab-menu">Menu</span></div>
+        <div class="nav-tab" onclick="tab('orders', this)"><i class="fas fa-truck"></i><span class="lng-tab-orders">Orders</span></div>
+        <div class="nav-tab" onclick="tab('me', this)"><i class="fas fa-user"></i><span class="lng-tab-me">Me</span></div>
+    </div>
+
+    <!-- Logic Script Runtime Module Initialization -->
+    <script>
+        const dictionary = {
+            en: {
+                tagline: "Ghar ke hath ka Swad", regTitle: "Create Account", regBtn: "Register Now",
+                sideMenu: "Menu", sideOrders: "My Orders", sideProfile: "My Profile",
+                sideSettings: "Settings", sideDelivery: "Delivery Partner", sideRate: "Rate Us",
+                sideFollow: "Follow Us", sideLogout: "Log Out", titleMenu: "OUR FULL MENU",
+                titleOrders: "📦 MY ORDERS", titleProfile: "👤 PROFILE", pName: "Name:",
+                pPhone: "Phone:", pAddr: "Address:", logoutEdit: "Log Out / Edit",
+                tabMenu: "Menu", tabOrders: "Orders", tabMe: "Me", totalStr: "Total: ",
+                orderBtn: "Order Now", noOrders: "No orders yet.", appSettings: "Application Settings",
+                settingsDesc: "Configure your interface styling, performance preferences, and profile credentials.",
+                rateHeading: "Rate Your Dining Experience", rateFeedbackPlaceholder: "Write your honest feedback here...",
+                rateSubmitBtn: "Submit Feedback", rateSuccessAlert: "Thank you for your valuable feedback!",
+                followHeading: "Join Our Instagram Community", followText: "Connect with our official profiles to receive instant discount updates, special menus, and culinary alerts!",
+                followBtn1: "Follow Account 1", followBtn2: "Follow Account 2", addBtn: "ADD",
+                lblFont: "Font Style", lblNotif: "Push Notifications", lblCache: "Data Cache", btnClear: "Clear App Data",
+                lblPrivacy: "Conceal Phone No.", lblBiometric: "Biometric Logins", lblCurrency: "Primary Currency"
+            },
+            hi: {
+                tagline: "घर के हाथ का स्वाद", regTitle: "खाता बनाएं", regBtn: "अभी रजिस्टर करें",
+                sideMenu: "मेन्यू", sideOrders: "मेरे ऑर्डर्स", sideProfile: "मेरी प्रोफाइल",
+                sideSettings: "सेटिंग्स", sideDelivery: "डिलीवरी पार्टनर", sideRate: "हमें रेट करें",
+                sideFollow: "फॉलो करें", sideLogout: "लॉग आउट", titleMenu: "हमारा पूरा मेन्यू",
+                titleOrders: "📦 मेरे ऑर्डर्स", titleProfile: "👤 प्रोफाइल", pName: "नाम:",
+                pPhone: "फ़ोन:", pAddr: "पता:", logoutEdit: "लॉग आउट / संपादन करें",
+                tabMenu: "मेन्यू", tabOrders: "ऑर्डर्स", tabMe: "प्रोफाइल", totalStr: "कुल राशि: ",
+                orderBtn: "अभी ऑर्डर करें", noOrders: "अभी तक कोई ऑर्डर नहीं है।", appSettings: "एप्लिकेशन सेटिंग्स",
+                settingsDesc: "इंटरफ़ेस स्टाइलिंग, एप्लिकेशन परफ़ॉर्मेंस डेटा और अपनी प्रोफ़ाइल कॉन्फ़िगर करें।",
+                rateHeading: "अपना भोजन अनुभव रेट करें", rateFeedbackPlaceholder: "यहाँ अपनी सच्ची प्रतिक्रिया लिखें...",
+                rateSubmitBtn: "प्रतिक्रिया सबमिट करें", rateSuccessAlert: "आपकी बहुमूल्य प्रतिक्रिया के लिए धन्यवाद!",
+                followHeading: "हमारे इंस्टाग्राम कम्युनिटी से जुड़ें", followText: "त्वरित डिस्काउंट अपडेट, विशेष मेनू और कुलीनरी अलर्ट प्राप्त करने के लिए हमारे आधिकारिक प्रोफाइल से जुड़ें!",
+                followBtn1: "फॉलो अकाउंट 1", followBtn2: "फॉलो अकाउंट 2", addBtn: "जोड़ें",
+                lblFont: "फ़ॉन्ट डिज़ाइन", lblNotif: "पुश नोटिफिकेशन", lblCache: "डेटा कैश", btnClear: "एप्लिकेशन डेटा साफ़ करें",
+                lblPrivacy: "फ़ोन नंबर छुपाएं", lblBiometric: "बायोमेट्रिक लॉगिन", lblCurrency: "मुख्य मुद्रा"
             }
-            renderMenu();
-            // Auto refresh orders status every 3 seconds
-            setInterval(renderOrders, 3000);
         };
 
-        function uploadPic(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('p-img').src = e.target.result;
-                    localStorage.setItem('hPic', e.target.result);
-                }
-                reader.readAsDataURL(input.files[0]);
+        let currentLang = localStorage.getItem('hLang') || 'en';
+
+        const dishes = [
+            {n: "Special Veg Thali", p: 120, img: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=200"},
+            {n: "Aalu Puri (5 Pcs)", p: 50, img: "https://img-global.cpcdn.com/recipes/b9a186407437b4c0/680x482cq70/puri-aloo-sabji-tari-wale-aalu-sabji-with-puri-recipe-main-photo.jpg?w=200"},
+            {n: "Chole Bhature", p: 90, img: "https://thumbs.dreamstime.com/z/chole-bhature-indian-street-food-indian-street-food-snack-chole-bhature-chickpea-curry-served-fried-flatbread-lemons-196402668.jpg?w=200"},
+            {n: "Paneer Paratha", p: 60, img: "https://th.bing.com/th/id/OIP.IiVLzQAHSX6YvDLQ6VYrPgHaEK?w=289&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3?w=200"},
+            {n: "Poha", p: 40, img: "https://images.unsplash.com/photo-1610192244261-3f33de3f55e4?w=200"},
+            {n: "Paneer Butter Masala", p: 180, img: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=200"},
+            {n: "Dal Makhani", p: 140, img: "https://th.bing.com/th/id/OIP.3Fyovgg6F7egYrcBznp5OAHaE8?w=306&h=204&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3?w=200"},
+            {n: "Mix Veg", p: 120, img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200"},
+            {n: "Chicken Biryani", p: 220, img: "https://th.bing.com/th/id/OIP.k4xC3lQs22-ibkUtKVCYVAHaFj?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3?w=200"},
+            {n: "Butter Chicken", p: 250, img: "https://th.bing.com/th/id/OIP.BOvRuC8dem4k0Qf-I7DtpAHaEK?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3?w=200"},
+            {n: "Veg Momos (10pc)", p: 70, img: "https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?w=200"},
+            {n: "Veg Chowmein", p: 80, img: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=200"},
+            {n: "Butter Naan", p: 40, img: "https://th.bing.com/th/id/OIP.aKqNVIXF01sK1u_12F3oAwHaHa?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3?w=200"},
+            {n: "Masala Dosa", p: 100, img: "https://tse1.explicit.bing.net/th/id/OIP._xBHPzBUi_bBMaoliJGeBwHaE7?w=700&h=466&rs=1&pid=ImgDetMain&o=7&rm=3?w=200"},
+            {n: "Gulab Jamun (2pc)", p: 40, img: "https://th.bing.com/th/id/OIP.dluRtowiRWM9gcQXEwIEuAHaG9?w=185&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3?w=200"},
+            {n: "Cold Coffee", p: 70, img: "https://tse1.explicit.bing.net/th/id/OIP.zUHF2fBdSUaJDyhQuX5etQHaLH?rs=1&pid=ImgDetMain&o=7&rm=3?w=200"}
+        ];
+
+        let cart = {}; let total = 0; let activeRatingScore = 0;
+
+        window.onload = () => {
+            setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => document.getElementById('splash').style.display = 'none', 500); }, 1500);
+            if(!localStorage.getItem('hUser')) {
+                document.getElementById('reg-screen').style.display = 'flex';
+            } else { updateProfile(); }
+            
+            if(localStorage.getItem('hTheme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('theme-btn').innerHTML = '<i class="fas fa-moon"></i>';
+            }
+
+            const savedFont = localStorage.getItem('hFont') || "'Segoe UI', sans-serif";
+            document.documentElement.style.setProperty('--app-font', savedFont);
+
+            applyLanguageDOMChanges();
+            renderMenu();
+        };
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                document.getElementById('theme-btn').innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('hTheme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('theme-btn').innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('hTheme', 'dark');
             }
         }
 
+        function toggleLanguage() {
+            currentLang = (currentLang === 'en') ? 'hi' : 'en';
+            localStorage.setItem('hLang', currentLang);
+            applyLanguageDOMChanges();
+            renderMenu();
+            if (document.getElementById('dynamic-view').classList.contains('active')) {
+                const activeStateView = document.getElementById('dynamic-title').getAttribute('data-active-view');
+                if(activeStateView) handleSideClick(activeStateView);
+            }
+        }
+
+        function applyLanguageDOMChanges() {
+            const vocabulary = dictionary[currentLang];
+            document.getElementById('sub-tagline').innerText = vocabulary.tagline;
+            document.getElementById('reg-title').innerText = vocabulary.regTitle;
+            document.getElementById('u-name').placeholder = (currentLang === 'en') ? "Full Name" : "पूरा नाम";
+            document.getElementById('u-phone').placeholder = (currentLang === 'en') ? "Mobile Number" : "मोबाइल नंबर";
+            document.getElementById('u-addr').placeholder = (currentLang === 'en') ? "Delivery Address" : "डिलीवरी का पता";
+            document.getElementById('reg-btn-text').innerText = vocabulary.regBtn;
+            
+            document.querySelector('.lng-side-menu').innerText = vocabulary.sideMenu;
+            document.querySelector('.lng-side-orders').innerText = vocabulary.sideOrders;
+            document.querySelector('.lng-side-profile').innerText = vocabulary.sideProfile;
+            document.querySelector('.lng-side-settings').innerText = vocabulary.sideSettings;
+            document.querySelector('.lng-side-delivery').innerText = vocabulary.sideDelivery;
+            document.querySelector('.lng-side-rate').innerText = vocabulary.sideRate;
+            document.querySelector('.lng-side-follow').innerText = vocabulary.sideFollow;
+            document.querySelector('.lng-side-logout').innerText = vocabulary.sideLogout;
+            
+            document.getElementById('title-menu').innerText = vocabulary.titleMenu;
+            document.getElementById('title-orders').innerText = vocabulary.titleOrders;
+            document.getElementById('title-profile').innerText = vocabulary.titleProfile;
+            
+            document.querySelector('.lng-p-name').innerText = vocabulary.pName;
+            document.querySelector('.lng-p-phone').innerText = vocabulary.pPhone;
+            document.querySelector('.lng-p-addr').innerText = vocabulary.pAddr;
+            document.getElementById('logout-edit-btn').innerText = vocabulary.logoutEdit;
+            
+            document.querySelector('.lng-tab-menu').innerText = vocabulary.tabMenu;
+            document.querySelector('.lng-tab-orders').innerText = vocabulary.tabOrders;
+            document.querySelector('.lng-tab-me').innerText = vocabulary.tabMe;
+            document.getElementById('order-now-btn').innerText = vocabulary.orderBtn;
+            
+            updateCartDisplayString();
+        }
+
+        function getCurrencySign() {
+            const cur = localStorage.getItem('hCur') || 'INR';
+            return cur === 'USD' ? '$' : '₹';
+        }
+
+        function convertPrice(val) {
+            const cur = localStorage.getItem('hCur') || 'INR';
+            if(cur === 'USD') {
+                return (val / 85).toFixed(2);
+            }
+            return val;
+        }
+
+        function updateCartDisplayString() {
+            const vocabulary = dictionary[currentLang];
+            if(total > 0) {
+                const sign = getCurrencySign();
+                const converted = convertPrice(total + 20);
+                document.getElementById('total-val').innerText = vocabulary.totalStr + sign + converted;
+            }
+        }
+
+        function toggleSidebar(open) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if(open) {
+                sidebar.classList.add('open');
+                overlay.classList.add('show');
+            } else {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('show');
+            }
+        }
+
+        function changeAppFont(fontValue) {
+            document.documentElement.style.setProperty('--app-font', fontValue);
+            localStorage.setItem('hFont', fontValue);
+        }
+
+        function toggleSettingConfig(key, element) {
+            localStorage.setItem(key, element.checked ? 'true' : 'false');
+            if(key === 'hPrivacy') updateProfile();
+        }
+
+        function changeCurrency(val) {
+            localStorage.setItem('hCur', val);
+            updateCartDisplayString();
+            renderMenu();
+        }
+
+        function clearApplicationData() {
+            if(confirm(currentLang === 'en' ? "Are you sure you want to completely clear application configurations and records?" : "क्या आप वाकई एप्लिकेशन कॉन्फ़िगरेशन और रिकॉर्ड को पूरी तरह से साफ़ करना चाहते हैं?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        function handleSideClick(target) {
+            toggleSidebar(false);
+            const vocabulary = dictionary[currentLang];
+            
+            if(target === 'home') {
+                tab('home', document.querySelectorAll('.bottom-nav .nav-tab')[0]);
+            } else if(target === 'orders') {
+                tab('orders', document.querySelectorAll('.bottom-nav .nav-tab')[1]);
+            } else if(target === 'me') {
+                tab('me', document.querySelectorAll('.bottom-nav .nav-tab')[2]);
+            } else {
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                document.querySelectorAll('.bottom-nav .nav-tab').forEach(t => t.classList.remove('active'));
+                
+                const dTitle = document.getElementById('dynamic-title');
+                const dContent = document.getElementById('dynamic-content-area');
+                
+                dTitle.setAttribute('data-active-view', target);
+                document.getElementById('dynamic-view').classList.add('active');
+                
+                if(target === 'settings') {
+                    dTitle.innerText = "⚙️ " + vocabulary.sideSettings.toUpperCase();
+                    const currentSavedFont = localStorage.getItem('hFont') || "'Segoe UI', sans-serif";
+                    const notifVal = localStorage.getItem('hNotif') !== 'false';
+                    const privacyVal = localStorage.getItem('hPrivacy') === 'true';
+                    const bioVal = localStorage.getItem('hBiometric') === 'true';
+                    const curVal = localStorage.getItem('hCur') || 'INR';
+                    
+                    dContent.innerHTML = `
+                        <div class="profile-container" style="padding: 20px 15px;">
+                            <i class="fas fa-cog" style="font-size: 38px; color: var(--primary); margin-bottom: 10px;"></i>
+                            <h3 style="margin: 0 0 5px 0;">${vocabulary.appSettings}</h3>
+                            <p style="opacity: 0.7; font-size: 13px; margin: 0 0 20px 0;">${vocabulary.settingsDesc}</p>
+                            
+                            <div class="settings-row">
+                                <span class="settings-label"><i class="fas fa-font" style="margin-right:8px; color:var(--primary); width:20px;"></i>${vocabulary.lblFont}</span>
+                                <select class="settings-select" onchange="changeAppFont(this.value)">
+                                    <option value="'Segoe UI', sans-serif" ${currentSavedFont.includes('Segoe UI') ? 'selected' : ''}>Segoe UI</option>
+                                    <option value="'Poppins', sans-serif" ${currentSavedFont.includes('Poppins') ? 'selected' : ''}>Poppins</option>
+                                    <option value="'Roboto', sans-serif" ${currentSavedFont.includes('Roboto') ? 'selected' : ''}>Roboto</option>
+                                    <option value="'Open Sans', sans-serif" ${currentSavedFont.includes('Open Sans') ? 'selected' : ''}>Open Sans</option>
+                                </select>
+                            </div>
+
+                            <div class="settings-row">
+                                <span class="settings-label"><i class="fas fa-money-bill-wave" style="margin-right:8px; color:var(--primary); width:20px;"></i>${vocabulary.lblCurrency}</span>
+                                <select class="settings-select" onchange="changeCurrency(this.value)">
+                                    <option value="INR" ${curVal === 'INR' ? 'selected' : ''}>₹ (INR)</option>
+                                    <option value="USD" ${curVal === 'USD' ? 'selected' : ''}>$ (USD)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="settings-row">
+                                <span class="settings-label"><i class="fas fa-bell" style="margin-right:8px; color:var(--primary); width:20px;"></i>${vocabulary.lblNotif}</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${notifVal ? 'checked' : ''} onchange="toggleSettingConfig('hNotif', this)">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="settings-row">
+                                <span class="settings-label"><i class="fas fa-shield-alt" style="margin-right:8px; color:var(--primary); width:20px;"></i>${vocabulary.lblPrivacy}</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${privacyVal ? 'checked' : ''} onchange="toggleSettingConfig('hPrivacy', this)">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="settings-row">
+                                <span class="settings-label"><i class="fas fa-fingerprint" style="margin-right:8px; color:var(--primary); width:20px;"></i>${vocabulary.lblBiometric}</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${bioVal ? 'checked' : ''} onchange="toggleSettingConfig('hBiometric', this)">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="settings-row">
+                                <span class="settings-label"><i class="fas fa-server" style="margin-right:8px; color:var(--primary); width:20px;"></i>${vocabulary.lblCache}</span>
+                                <span style="font-size:12px; opacity:0.6; font-weight:bold; color:var(--success);">Active (OK)</span>
+                            </div>
+
+                            <button class="settings-btn-danger" onclick="clearApplicationData()"><i class="fas fa-trash-alt" style="margin-right:6px;"></i> ${vocabulary.btnClear}</button>
+                        </div>`;
+                } else if(target === 'rate') {
+                    dTitle.innerText = "⭐ " + vocabulary.sideRate.toUpperCase();
+                    activeRatingScore = 0;
+                    dContent.innerHTML = `
+                        <div class="profile-container" style="text-align: center; padding: 30px 15px;">
+                            <i class="fas fa-star-half-alt" style="font-size: 44px; color: var(--primary); margin-bottom: 10px;"></i>
+                            <h3 style="margin: 0 0 5px 0;">${vocabulary.rateHeading}</h3>
+                            <div class="rating-stars">
+                                <i class="fas fa-star" onclick="assignStarRating(1)" data-index="1"></i>
+                                <i class="fas fa-star" onclick="assignStarRating(2)" data-index="2"></i>
+                                <i class="fas fa-star" onclick="assignStarRating(3)" data-index="3"></i>
+                                <i class="fas fa-star" onclick="assignStarRating(4)" data-index="4"></i>
+                                <i class="fas fa-star" onclick="assignStarRating(5)" data-index="5"></i>
+                            </div>
+                            <textarea id="feedback-text" class="feedback-input" placeholder="${vocabulary.rateFeedbackPlaceholder}"></textarea>
+                            <button class="reg-btn" onclick="submitUserFeedback()" style="width: 95%; padding: 12px; font-size: 15px;">${vocabulary.rateSubmitBtn}</button>
+                        </div>`;
+                } else if(target === 'follow') {
+                    dTitle.innerText = "📸 " + vocabulary.sideFollow.toUpperCase();
+                    dContent.innerHTML = `
+                        <div class="profile-container" style="text-align: center; padding: 30px 15px;">
+                            <i class="fab fa-instagram" style="font-size: 50px; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px;"></i>
+                            <h3 style="margin: 0 0 8px 0;">${vocabulary.followHeading}</h3>
+                            <p style="opacity: 0.7; font-size: 13px; margin: 0; line-height: 1.5; padding: 0 5px;">${vocabulary.followText}</p>
+                            
+                            <a href="https://instagram.com/your_first_id" target="_blank" class="reg-btn" style="display: inline-block; width: 85%; margin-top: 20px; padding: 12px 0; text-decoration: none; font-size: 14px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15);"><i class="fab fa-instagram" style="margin-right: 6px;"></i> ${vocabulary.followBtn1}</a>
+                            
+                            <a href="https://instagram.com/your_second_id" target="_blank" class="reg-btn" style="display: inline-block; width: 85%; margin-top: 12px; padding: 12px 0; text-decoration: none; font-size: 14px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15); background: #333;"><i class="fab fa-instagram" style="margin-right: 6px;"></i> ${vocabulary.followBtn2}</a>
+                        </div>`;
+                }
+            }
+        }
+
+        function assignStarRating(rating) {
+            activeRatingScore = rating;
+            const stars = document.querySelectorAll('.rating-stars i');
+            stars.forEach((star, idx) => {
+                if(idx < rating) star.classList.add('active');
+                else star.classList.remove('active');
+            });
+        }
+
+        function submitUserFeedback() {
+            if(activeRatingScore === 0) {
+                alert(currentLang === 'en' ? "Please select a star rating level first!" : "कृपया पहले स्टार रेटिंग स्तर चुनें!");
+                return;
+            }
+            alert(dictionary[currentLang].rateSuccessAlert);
+            document.getElementById('feedback-text').value = '';
+            assignStarRating(0);
+            handleSideClick('home');
+        }
+
         function renderMenu() {
+            const vocabulary = dictionary[currentLang];
+            const sign = getCurrencySign();
             document.getElementById('menu-list').innerHTML = dishes.map((d) => {
                 const q = cart[d.n] || 0;
+                const finalPrice = convertPrice(d.p);
                 return `
                 <div class="food-card">
-                    <img src="https://via.placeholder.com/100/d32f2f/ffffff?text=Yum">
-                    <div class="food-info"><div class="food-name"><b>${d.n}</b></div><b>₹${d.p}</b></div>
+                    <img src="${d.img}" onerror="this.src='https://via.placeholder.com/100?text=Food'">
+                    <div class="food-info">
+                        <div class="food-name"><b>${d.n}</b></div>
+                        <b style="color:var(--primary)">${sign}${finalPrice}</b>
+                    </div>
                     <div class="qty-col">
                         ${q > 0 ? `
                             <div class="qty-controls">
                                 <button class="qty-btn" onclick="updateQty('${d.n}', -1)">-</button>
                                 <span class="qty-val">${q}</span>
                                 <button class="qty-btn" onclick="updateQty('${d.n}', 1)">+</button>
-                            </div>` : `<button class="add-btn" onclick="updateQty('${d.n}', 1)">ADD</button>`}
+                            </div>` : `<button class="add-btn" onclick="updateQty('${d.n}', 1)">${vocabulary.addBtn}</button>`}
                     </div>
                 </div>`;
             }).join('');
@@ -159,102 +557,142 @@
             if (cart[name] <= 0) delete cart[name];
             total = 0; for (let n in cart) total += dishes.find(d => d.n === n).p * cart[n];
             document.getElementById('cart-bar').style.display = total > 0 ? 'flex' : 'none';
-            document.getElementById('total-val').innerText = 'Total: ₹' + (total + 20); // +20 delivery
+            updateCartDisplayString();
             renderMenu();
         }
 
         function tab(id, el) {
+            document.getElementById('dynamic-title').removeAttribute('data-active-view');
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             document.getElementById(id + '-view').classList.add('active');
-            el.classList.add('active');
+            if(el) el.classList.add('active');
             if(id === 'orders') renderOrders();
         }
 
         function saveUser() {
-            const user = { name: document.getElementById('u-name').value, phone: document.getElementById('u-phone').value, addr: document.getElementById('u-addr').value };
-            if(user.name && user.phone && user.addr) {
-                localStorage.setItem('hUser', JSON.stringify(user));
-                location.reload();
-            } else { alert("Please fill all details!"); }
+            const u = { name: document.getElementById('u-name').value, phone: document.getElementById('u-phone').value, addr: document.getElementById('u-addr').value };
+            if(u.name && u.phone && u.addr) { localStorage.setItem('hUser', JSON.stringify(u)); location.reload(); }
+            else { alert(currentLang === 'en' ? "Fill all details!" : "सभी विवरण भरें!"); }
         }
 
         function updateProfile() {
             const u = JSON.parse(localStorage.getItem('hUser'));
+            if(!u) return;
+            const isPrivacyActive = localStorage.getItem('hPrivacy') === 'true';
+            
             document.getElementById('p-name').innerText = u.name;
-            document.getElementById('p-phone').innerText = u.phone;
+            document.getElementById('p-phone').innerText = isPrivacyActive ? "********" + u.phone.slice(-2) : u.phone;
             document.getElementById('p-addr').innerText = u.addr;
-            const savedPic = localStorage.getItem('hPic');
-            if(savedPic) document.getElementById('p-img').src = savedPic;
+            document.getElementById('side-username').innerText = u.name;
+            document.getElementById('side-userphone').innerText = isPrivacyActive ? "********" + u.phone.slice(-2) : u.phone;
+            if(localStorage.getItem('hPic')) document.getElementById('p-img').src = localStorage.getItem('hPic');
         }
 
-        function logout() { localStorage.removeItem('hUser'); location.reload(); }
+        function uploadPic(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('p-img').src = e.target.result;
+                    localStorage.setItem('hPic', e.target.result);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function logout() { localStorage.clear(); location.reload(); }
 
         function placeOrder() {
-            const user = JSON.parse(localStorage.getItem('hUser'));
-            
-            // Create strings for both Customer (HTML) and Driver (Text)
-            let itemsText = "";
-            let itemsHTML = "";
-            for (let n in cart) {
-                itemsText += `${cart[n]} x ${n}, `;
-                itemsHTML += `• ${cart[n]} x ${n}<br>`;
-            }
-            itemsText = itemsText.slice(0, -2); // Remove trailing comma
+    let orders = JSON.parse(localStorage.getItem('hOrders') || "[]");
+    let summary = "";
 
-            // Unified Order Object - matches what Dashboard expects
-            const newOrder = { 
-                id: Date.now(), 
-                customerName: user.name,
-                phone: user.phone,
-                address: user.addr,
-                items: itemsText, // For Driver
-                itemsHTML: itemsHTML, // For Customer display
-                total: total + 20, 
+    for (let n in cart) {
+        summary += `• ${cart[n]} x ${n}<br>`;
+    }
+
+    let orderId = Date.now();
+
+    const sign = getCurrencySign();
+    const finalCalculatedTotal = convertPrice(total + 20);
+
+    orders.push({
+        id: orderId,
+        otp: Math.floor(1000 + Math.random() * 9000),
+        itemsHTML: summary,
+        totalPrice: `${sign}${finalCalculatedTotal}`,
+        status: 'PENDING'
+    });
+
+    localStorage.setItem('hOrders', JSON.stringify(orders));
+
+    cart = {};
+    total = 0;
+
+    document.getElementById('cart-bar').style.display = 'none';
+
+    renderMenu();
+
+    tab('orders', document.querySelectorAll('.bottom-nav .nav-tab')[1]);
+}
+
+            orders.push({ 
+                id: orderId, 
                 otp: Math.floor(1000 + Math.random() * 9000), 
-                status: 'pending' 
-            };
+                itemsHTML: summary, 
+                totalPrice: `${sign}${finalCalculatedTotal}`, 
+                status: 'PENDING' 
+            });
 
-            // Save to SHARED storage key 'hb_orders'
-            let orders = JSON.parse(localStorage.getItem('hb_orders') || "[]");
-            orders.push(newOrder);
-            localStorage.setItem('hb_orders', JSON.stringify(orders));
-
-            // Reset Cart
+            localStorage.setItem('hOrders', JSON.stringify(orders));
             cart = {}; total = 0; document.getElementById('cart-bar').style.display = 'none';
-            alert("Order Placed Successfully! Waiting for Driver.");
-            
-            // Switch to orders tab
-            const orderTab = document.querySelectorAll('.nav-item')[1];
-            tab('orders', orderTab);
-        }
+            tab('orders', document.querySelectorAll('.bottom-nav .nav-tab')[1]);
+
+            function placeOrder() {
+    let orders = JSON.parse(localStorage.getItem('hOrders') || "[]");
+    let summary = "";
+
+    for (let n in cart) {
+        summary += `• ${cart[n]} x ${n}<br>`;
+    }
+
+    let orderId = Date.now();
+    const sign = getCurrencySign();
+    const finalCalculatedTotal = convertPrice(total + 20);
+
+    orders.push({
+        id: orderId,
+        otp: Math.floor(1000 + Math.random() * 9000),
+        itemsHTML: summary,
+        totalPrice: `${sign}${finalCalculatedTotal}`,
+        status: 'PENDING'
+    });
+
+    localStorage.setItem('hOrders', JSON.stringify(orders));
+
+    cart = {};
+    total = 0;
+
+    document.getElementById('cart-bar').style.display = 'none';
+
+    tab('orders', document.querySelectorAll('.bottom-nav .nav-tab')[1]);
+}
 
         function renderOrders() {
-            // Read from SHARED storage key
-            const orders = JSON.parse(localStorage.getItem('hb_orders') || "[]");
-            
-            // Filter only orders for this user (simple check by phone, or just show all for demo)
-            const user = JSON.parse(localStorage.getItem('hUser'));
-            const myOrders = orders.filter(o => o.phone === user.phone);
-
-            document.getElementById('orders-list').innerHTML = myOrders.reverse().map(o => {
-                const isDelivered = o.status === 'delivered';
-                const statusColor = isDelivered ? '#28a745' : '#ff9800'; 
-                const statusText = isDelivered ? 'DELIVERED' : 'ON WAY';
-                
+            const orders = JSON.parse(localStorage.getItem('hOrders') || "[]");
+            const vocabulary = dictionary[currentLang];
+            document.getElementById('orders-list').innerHTML = orders.slice().reverse().map(o => {
+                const statusColor = o.status === 'DELIVERED' ? 'green' : 'orange';
+                const cleanTotalStr = vocabulary.totalStr.endsWith(': ') ? vocabulary.totalStr : vocabulary.totalStr.replace(':', '');
                 return `
                 <div class="order-container" style="border-left: 5px solid ${statusColor};">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <b style="color:${statusColor}; font-size:14px;">${isDelivered ? '✅' : '🚚'} ${statusText}</b>
-                        ${!isDelivered ? `<span style="background:red; color:white; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:12px;">OTP: ${o.otp}</span>` : ''}
+                    <div style="display:flex; justify-content:space-between;">
+                        <b style="color:${statusColor};">${o.status}</b>
+                        <span class="otp-span" style="padding:2px 8px; border-radius:4px;">OTP: ${o.otp}</span>
                     </div>
-                    <div style="font-size:13px; margin:10px 0; color:#555;">${o.itemsHTML || o.items}</div>
-                    <div style="font-weight:bold; color:#333; display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #eee; padding-top:5px;">
-                        <span>Total: ₹${o.total}</span>
-                        <span style="color:#aaa; font-size:10px; font-weight:normal;">#${o.id.toString().slice(-4)}</span>
-                    </div>
+                    <div style="font-size:13px; margin:10px 0;">${o.itemsHTML}</div>
+                    <div style="font-weight:bold; color:green;">${cleanTotalStr}${o.totalPrice}</div>
                 </div>`;
-            }).join('');
+            }).join('') || `<p style="text-align:center;">${vocabulary.noOrders}</p>`;
         }
     </script>
 </body>
