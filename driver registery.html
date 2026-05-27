@@ -420,7 +420,7 @@
         localStorage.setItem('u_vno', vNo);
 
         // Registry complete hote hi directly 'in.html' open hoga
-        window.location.href = "in.html";
+        window.location.href = "dilvery dashboard.html";
     }
 
     function handleLogin() {
@@ -428,7 +428,7 @@
         const pass = document.getElementById('loginPass').value;
         
         if(localStorage.getItem('u_name') && name.toLowerCase() === localStorage.getItem('u_name').toLowerCase() && pass === localStorage.getItem('u_pass')) {
-            window.location.href = "delivery dashboard.html";
+            window.location.href = "dilvery dashboard.html";
         } else {
             alert("Details match nahi hui! Sahi credentials dalein.");
         }
