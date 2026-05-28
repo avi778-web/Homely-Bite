@@ -46,8 +46,6 @@
             padding:90px 20px 40px;
         }
 
-        /* NAVBAR */
-
         .navbar{
             position:fixed;
             top:0;
@@ -99,8 +97,6 @@
         .brand-name span{
             color:var(--primary-color);
         }
-
-        /* CARD */
 
         .auth-card{
             width:100%;
@@ -259,8 +255,6 @@
             display:none !important;
         }
 
-        /* PROFILE */
-
         .profile-container{
             text-align:center;
         }
@@ -338,296 +332,265 @@
 
 <body>
 
-    <!-- NAVBAR -->
+<nav class="navbar">
+    <div class="brand-box">
+        <div class="logo-circle">H</div>
 
-    <nav class="navbar">
-        <div class="brand-box">
-            <div class="logo-circle">H</div>
-            <div class="brand-name">
-                Homly-<span>Bite</span>
+        <div class="brand-name">
+            Homly-<span>Bite</span>
+        </div>
+    </div>
+</nav>
+
+<div class="auth-card">
+
+    <button class="toggle-btn" id="modeToggle" onclick="toggleMode()">
+        Existing User? Login
+    </button>
+
+    <!-- SIGNUP -->
+
+    <div id="signupSection">
+
+        <div class="brand-header">
+            <h2>Partner Registration</h2>
+            <p>Join our kitchen network today (18+ Only)</p>
+        </div>
+
+        <div class="form-group">
+            <label>Full Name</label>
+
+            <input type="text" id="regName" placeholder="Enter Full Name">
+        </div>
+
+        <div class="form-group">
+
+            <label>Date of Birth</label>
+
+            <div class="dob-grid">
+
+                <input type="number" id="dd" placeholder="DD">
+
+                <input type="number" id="mm" placeholder="MM">
+
+                <input type="number" id="yy" placeholder="YYYY">
+
             </div>
         </div>
-    </nav>
 
-    <!-- MAIN CARD -->
+        <div class="form-group">
 
-    <div class="auth-card">
+            <label>Password</label>
 
-        <button class="toggle-btn" id="modeToggle" onclick="toggleMode()">
-            Existing User? Login
+            <input type="password" id="regPass" placeholder="••••••••">
+        </div>
+
+        <div class="form-group">
+
+            <label>Confirm Password</label>
+
+            <input type="password" id="confirmPass" placeholder="••••••••">
+        </div>
+
+        <div class="form-group">
+
+            <label>Profile Photo</label>
+
+            <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+
+                <small id="uploadText">
+                    📸 Upload Photo
+                </small>
+
+                <input
+                    type="file"
+                    hidden
+                    id="fileInput"
+                    accept="image/*"
+                    onchange="previewFile(this,'uploadText','u_img')"
+                >
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="handleSignup()">
+            Next: Vehicle Details
         </button>
-
-        <!-- SIGNUP -->
-
-        <div id="signupSection">
-
-            <div class="brand-header">
-                <h2>Partner Registration</h2>
-                <p>Join our kitchen network today (18+ Only)</p>
-            </div>
-
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" id="regName" placeholder="Enter Full Name">
-            </div>
-
-            <div class="form-group">
-                <label>Date of Birth</label>
-
-                <div class="dob-grid">
-                    <input type="number" id="dd" placeholder="DD">
-                    <input type="number" id="mm" placeholder="MM">
-                    <input type="number" id="yy" placeholder="YYYY">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="regPass" placeholder="••••••••">
-            </div>
-
-            <div class="form-group">
-                <label>Confirm Password</label>
-                <input type="password" id="confirmPass" placeholder="••••••••">
-            </div>
-
-            <div class="form-group">
-                <label>Profile Photo</label>
-
-                <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
-
-                    <small id="uploadText">
-                        📸 Upload Photo
-                    </small>
-
-                    <input
-                        type="file"
-                        hidden
-                        id="fileInput"
-                        accept="image/*"
-                        onchange="previewFile(this,'uploadText','u_img')"
-                    >
-                </div>
-            </div>
-
-            <button class="btn-primary" onclick="handleSignup()">
-                Next: Vehicle Details
-            </button>
-
-        </div>
-
-        <!-- VEHICLE -->
-
-        <div id="vehicleSection" class="hidden">
-
-            <div class="brand-header">
-                <h2>Vehicle Verification</h2>
-                <p>Vehicle verification details</p>
-            </div>
-
-            <div class="form-group">
-                <label>Vehicle Brand</label>
-
-                <select id="vehicleBrand">
-
-                    <option value="">Select Vehicle</option>
-
-                    <option>Honda</option>
-                    <option>Hero</option>
-                    <option>Bajaj</option>
-                    <option>TVS</option>
-                    <option>Suzuki</option>
-                    <option>Commercial E-Bike</option>
-                    <option>Other</option>
-
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Vehicle Number</label>
-                <input type="text" id="vehicleNo" placeholder="DL 3C AB 1234">
-            </div>
-
-            <div class="form-group">
-                <label>Driving Licence Photo</label>
-
-                <div class="upload-zone" onclick="document.getElementById('licenceInput').click()">
-
-                    <small id="licenceText">
-                        🪪 Upload Licence
-                    </small>
-
-                    <input
-                        type="file"
-                        hidden
-                        id="licenceInput"
-                        accept="image/*"
-                        onchange="previewFile(this,'licenceText','u_licence')"
-                    >
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Aadhaar Card Photo</label>
-
-                <div class="upload-zone" onclick="document.getElementById('aadhaarInput').click()">
-
-                    <small id="aadhaarText">
-                        🆔 Upload Aadhaar
-                    </small>
-
-                    <input
-                        type="file"
-                        hidden
-                        id="aadhaarInput"
-                        accept="image/*"
-                        onchange="previewFile(this,'aadhaarText','u_aadhaar')"
-                    >
-                </div>
-            </div>
-
-            <button class="btn-primary" onclick="handleVehicleSubmit()">
-                Complete Registration
-            </button>
-
-        </div>
-
-        <!-- LOGIN -->
-
-        <div id="loginSection" class="hidden">
-
-            <div class="brand-header">
-                <h2>Welcome Back</h2>
-                <p>Login to your dashboard</p>
-            </div>
-
-            <div class="form-group">
-                <label>Name</label>
-                <input type="text" id="loginName" placeholder="Enter Name">
-            </div>
-
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="loginPass" placeholder="••••••••">
-            </div>
-
-            <a class="forgot-link" onclick="showForgotSection()">
-                Forgot Password?
-            </a>
-
-            <button class="btn-primary" onclick="handleLogin()">
-                Login
-            </button>
-
-        </div>
-
-        <!-- FORGOT -->
-
-        <div id="forgotSection" class="hidden">
-
-            <div class="brand-header">
-                <h2>Recover Account</h2>
-                <p>Verify old account details</p>
-            </div>
-
-            <div class="form-group">
-                <label>Registered Name</label>
-                <input type="text" id="forgotName">
-            </div>
-
-            <div class="form-group">
-                <label>Birth Year</label>
-                <input type="number" id="forgotYY">
-            </div>
-
-            <button class="btn-primary" onclick="handleForgotPassword()">
-                Verify & Login
-            </button>
-
-            <button
-                class="btn-primary btn-secondary"
-                style="margin-top:10px"
-                onclick="toggleMode()"
-            >
-                Back
-            </button>
-
-        </div>
-
-        <!-- PROFILE -->
-
-        <div id="profileSection" class="hidden">
-
-            <div class="profile-container">
-
-                <img id="p-img" class="profile-img">
-
-                <h2 id="p-name" style="margin-top:15px;"></h2>
-
-                <p style="color:var(--success-color);font-weight:600;margin-top:5px;">
-                    ● Verified Partner Account
-                </p>
-
-                <div class="summary-details">
-
-                    <p>
-                        <strong>DOB:</strong>
-                        <span id="p-dob"></span>
-                    </p>
-
-                    <p>
-                        <strong>Vehicle:</strong>
-                        <span id="p-vehicle"></span>
-                    </p>
-
-                    <p>
-                        <strong>Vehicle No:</strong>
-                        <span id="p-vno"></span>
-                    </p>
-
-                </div>
-
-                <div class="action-grid">
-
-                    <button class="btn-primary btn-secondary" onclick="editProfile()">
-                        Edit Profile
-                    </button>
-
-                    <button
-                        class="btn-primary"
-                        style="background:#e74c3c"
-                        onclick="handleLogout()"
-                    >
-                        Logout
-                    </button>
-
-                </div>
-
-                <div class="order-container">
-
-                    <!-- CORRECT LINK -->
-                    <a href="delivery-dashboard.html" class="btn-order">
-                        View Orders →
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
 
     </div>
 
+    <!-- VEHICLE -->
+
+    <div id="vehicleSection" class="hidden">
+
+        <div class="brand-header">
+
+            <h2>Vehicle Verification</h2>
+
+            <p>Vehicle verification details</p>
+        </div>
+
+        <div class="form-group">
+
+            <label>Vehicle Brand</label>
+
+            <select id="vehicleBrand">
+
+                <option value="">Select Vehicle</option>
+
+                <option>Honda</option>
+                <option>Hero</option>
+                <option>Bajaj</option>
+                <option>TVS</option>
+                <option>Suzuki</option>
+                <option>Commercial E-Bike</option>
+                <option>Other</option>
+
+            </select>
+        </div>
+
+        <div class="form-group">
+
+            <label>Vehicle Number</label>
+
+            <input type="text" id="vehicleNo" placeholder="DL 3C AB 1234">
+        </div>
+
+        <div class="form-group">
+
+            <label>Driving Licence Photo</label>
+
+            <div class="upload-zone" onclick="document.getElementById('licenceInput').click()">
+
+                <small id="licenceText">
+                    🪪 Upload Licence
+                </small>
+
+                <input
+                    type="file"
+                    hidden
+                    id="licenceInput"
+                    accept="image/*"
+                    onchange="previewFile(this,'licenceText','u_licence')"
+                >
+            </div>
+        </div>
+
+        <div class="form-group">
+
+            <label>Aadhaar Card Photo</label>
+
+            <div class="upload-zone" onclick="document.getElementById('aadhaarInput').click()">
+
+                <small id="aadhaarText">
+                    🆔 Upload Aadhaar
+                </small>
+
+                <input
+                    type="file"
+                    hidden
+                    id="aadhaarInput"
+                    accept="image/*"
+                    onchange="previewFile(this,'aadhaarText','u_aadhaar')"
+                >
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="handleVehicleSubmit()">
+            Complete Registration
+        </button>
+
+    </div>
+
+    <!-- LOGIN -->
+
+    <div id="loginSection" class="hidden">
+
+        <div class="brand-header">
+
+            <h2>Welcome Back</h2>
+
+            <p>Login to your dashboard</p>
+        </div>
+
+        <div class="form-group">
+
+            <label>Name</label>
+
+            <input type="text" id="loginName" placeholder="Enter Name">
+        </div>
+
+        <div class="form-group">
+
+            <label>Password</label>
+
+            <input type="password" id="loginPass" placeholder="••••••••">
+        </div>
+
+        <a class="forgot-link" onclick="showForgotSection()">
+            Forgot Password?
+        </a>
+
+        <button class="btn-primary" onclick="handleLogin()">
+            Login
+        </button>
+
+    </div>
+
+    <!-- FORGOT -->
+
+    <div id="forgotSection" class="hidden">
+
+        <div class="brand-header">
+
+            <h2>Recover Account</h2>
+
+            <p>Verify old account details</p>
+        </div>
+
+        <div class="form-group">
+
+            <label>Registered Name</label>
+
+            <input type="text" id="forgotName">
+        </div>
+
+        <div class="form-group">
+
+            <label>Birth Year</label>
+
+            <input type="number" id="forgotYY">
+        </div>
+
+        <button class="btn-primary" onclick="handleForgotPassword()">
+            Verify & Login
+        </button>
+
+        <button
+            class="btn-primary btn-secondary"
+            style="margin-top:10px"
+            onclick="toggleMode()"
+        >
+            Back
+        </button>
+
+    </div>
+
+</div>
+
 <script>
 
-    // AUTO LOGIN CHECK
+    // AUTO LOGIN
 
-    window.onload = function(){
+    window.onload = function () {
 
-        if(localStorage.getItem('u_name')){
+        const savedUser = localStorage.getItem('u_name');
 
-            window.location.href = "delivery-dashboard.html";
+        if (
+            savedUser &&
+            window.location.pathname.indexOf("delivery-dashboard.html") === -1
+        ) {
 
+            window.location.href = "./delivery-dashboard.html";
         }
     };
 
@@ -641,32 +604,7 @@
 
     };
 
-    // BACKGROUND CHANGE
-
-    function changeBg(step){
-
-        if(step === 'signup'){
-
-            document.body.style.backgroundImage =
-                "linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), var(--bg-signup)";
-
-        }
-
-        else if(step === 'vehicle'){
-
-            document.body.style.backgroundImage =
-                "linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), var(--bg-vehicle)";
-
-        }
-
-        else if(step === 'dashboard'){
-
-            document.body.style.backgroundImage =
-                "linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), var(--bg-dashboard)";
-        }
-    }
-
-    // TOGGLE LOGIN/SIGNUP
+    // TOGGLE
 
     function toggleMode(){
 
@@ -675,7 +613,6 @@
         document.getElementById('signupSection').classList.add('hidden');
         document.getElementById('vehicleSection').classList.add('hidden');
         document.getElementById('forgotSection').classList.add('hidden');
-        document.getElementById('profileSection').classList.add('hidden');
 
         if(isLoginMode){
 
@@ -683,7 +620,6 @@
 
             document.getElementById('modeToggle').innerText =
                 "New User? Sign Up";
-
         }
 
         else{
@@ -695,11 +631,9 @@
             document.getElementById('modeToggle').innerText =
                 "Existing User? Login";
         }
-
-        changeBg('signup');
     }
 
-    // FORGOT SECTION
+    // SHOW FORGOT
 
     function showForgotSection(){
 
@@ -756,6 +690,7 @@
             !mm ||
             !yy ||
             !pass ||
+            !confirmPass ||
             !sessionData.u_img
         ){
 
@@ -763,7 +698,7 @@
             return;
         }
 
-        // AGE VALIDATION
+        // AGE CHECK
 
         const currentYear = 2026;
 
@@ -775,11 +710,15 @@
             return;
         }
 
+        // PASSWORD MATCH
+
         if(pass !== confirmPass){
 
             alert("Passwords do not match!");
             return;
         }
+
+        // SAVE TEMP
 
         sessionData.u_name = name;
         sessionData.u_dd = dd;
@@ -790,8 +729,6 @@
         document.getElementById('signupSection').classList.add('hidden');
 
         document.getElementById('vehicleSection').classList.remove('hidden');
-
-        changeBg('vehicle');
     }
 
     // VEHICLE SUBMIT
@@ -815,7 +752,7 @@
             return;
         }
 
-        // SAVE
+        // SAVE LOCAL STORAGE
 
         localStorage.setItem('u_name',sessionData.u_name);
         localStorage.setItem('u_dd',sessionData.u_dd);
@@ -826,9 +763,9 @@
         localStorage.setItem('u_brand',brand);
         localStorage.setItem('u_vno',vNo);
 
-        // CORRECT REDIRECT
+        // REDIRECT
 
-        window.location.href = "delivery-dashboard.html";
+        window.location.href = "./delivery-dashboard.html";
     }
 
     // LOGIN
@@ -841,13 +778,21 @@
         const pass =
             document.getElementById('loginPass').value;
 
+        const savedName =
+            localStorage.getItem('u_name');
+
+        const savedPass =
+            localStorage.getItem('u_pass');
+
         if(
-            localStorage.getItem('u_name') &&
-            name.toLowerCase() === localStorage.getItem('u_name').toLowerCase() &&
-            pass === localStorage.getItem('u_pass')
+            savedName &&
+            name.toLowerCase() === savedName.toLowerCase() &&
+            pass === savedPass
         ){
 
-            window.location.href = "delivery-dashboard.html";
+            alert("Login Successful!");
+
+            window.location.href = "./delivery-dashboard.html";
         }
 
         else{
@@ -874,57 +819,13 @@
 
             alert("Verification successful!");
 
-            window.location.href = "delivery-dashboard.html";
+            window.location.href = "./delivery-dashboard.html";
         }
 
         else{
 
             alert("Details not matched!");
         }
-    }
-
-    // LOGOUT
-
-    function handleLogout(){
-
-        localStorage.clear();
-
-        location.reload();
-    }
-
-    // EDIT PROFILE
-
-    function editProfile(){
-
-        document.getElementById('regName').value =
-            localStorage.getItem('u_name');
-
-        document.getElementById('dd').value =
-            localStorage.getItem('u_dd');
-
-        document.getElementById('mm').value =
-            localStorage.getItem('u_mm');
-
-        document.getElementById('yy').value =
-            localStorage.getItem('u_yy');
-
-        document.getElementById('regPass').value =
-            localStorage.getItem('u_pass');
-
-        document.getElementById('confirmPass').value =
-            localStorage.getItem('u_pass');
-
-        sessionData.u_img =
-            localStorage.getItem('u_img');
-
-        document.getElementById('uploadText').innerText =
-            "✅ Image Loaded";
-
-        document.getElementById('profileSection').classList.add('hidden');
-
-        document.getElementById('signupSection').classList.remove('hidden');
-
-        changeBg('signup');
     }
 
 </script>
