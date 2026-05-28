@@ -428,7 +428,7 @@
         const pass = document.getElementById('loginPass').value;
         
         if(localStorage.getItem('u_name') && name.toLowerCase() === localStorage.getItem('u_name').toLowerCase() && pass === localStorage.getItem('u_pass')) {
-            window.location.href = "dilvery dashboard.html";
+            window.location.href = "driver dashboard.html";
         } else {
             alert("Details match nahi hui! Sahi credentials dalein.");
         }
@@ -440,7 +440,7 @@
 
         if(localStorage.getItem('u_name') && name.toLowerCase() === localStorage.getItem('u_name').toLowerCase() && yy === localStorage.getItem('u_yy')) {
             alert("Verification Pass! Redirecting to your dashboard.");
-            window.location.href = "dilvery dashboard.html";
+            window.location.href = "driver dashboard.html";
         } else {
             alert("Details match nahi hui! Purani ID recover nahi ki ja saki.");
         }
