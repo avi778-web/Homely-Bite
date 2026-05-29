@@ -6,23 +6,6 @@
     <title>Homely Bite</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-         
-    .sidebar {
-      width: 250px;
-      background: #222;
-      color: #fff;
-      height: 100vh;
-      position: fixed;
-      left: 0;
-      top: 0;
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
-    }
-    .sidebar.active { transform: translateX(0); }
-    .sidebar-item { display: block; padding: 15px; color: #fff; text-decoration: none; }
-    .sidebar-item:hover { background: #444; }
-    .content { margin-left: 260px; padding: 20px; }
-  
         :root { 
             --primary: #d32f2f; 
             --bg: #f4f4f4; 
@@ -142,11 +125,9 @@
             <div class="sidebar-item" onclick="handleSideClick('settings')"><i class="fas fa-cog"></i> <span class="lng-side-settings">Settings</span></div>
             
             <!-- Delivery Partner Link Fixed to open safely -->
-<a href="./driver%20registery.html" class="sidebar-item" style="text-decoration: none;">
-    <i class="fas fa-motorcycle"></i> 
-    <span class="lng-side-delivery">Delivery Partner</span>
-</a>
-
+            <a href="dashboard.html" class="sidebar-item" style="text-decoration: none;" onclick="toggleSidebar(false)">
+                <i class="fas fa-motorcycle"></i> <span class="lng-side-delivery">Delivery Partner</span>
+            </a>
             
             <div class="sidebar-divider"></div>
             <div class="sidebar-item" onclick="handleSideClick('rate')"><i class="fas fa-star"></i> <span class="lng-side-rate">Rate Us</span></div>
@@ -217,13 +198,6 @@
     <!-- Logic Script Runtime Module Initialization -->
     <script>
         let orders = [];  
-          <script>
-    function toggleSidebar(state) {
-      const sidebar = document.querySelector('.sidebar');
-      if(sidebar){
-        if(state){ sidebar.classList.add('active'); }
-        else { sidebar.classList.remove('active'); }
-      }
         const dictionary = {
             en: {
                 tagline: "Ghar ke hath ka Swad", regTitle: "Create Account", regBtn: "Register Now",
