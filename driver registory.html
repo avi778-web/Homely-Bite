@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
+
         :root{
             --primary:#d32f2f;
             --bg:#f2f2f2;
@@ -31,11 +32,16 @@
             background:var(--primary);
             color:white;
             padding:14px;
-            text-align:center;
             position:sticky;
             top:0;
             z-index:100;
             box-shadow:0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-top{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
         }
 
         .header h1{
@@ -47,9 +53,23 @@
             font-size:12px;
         }
 
+        .partner-profile{
+            width:48px;
+            height:48px;
+            border-radius:50%;
+            background:white;
+            color:var(--primary);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:22px;
+            cursor:pointer;
+            font-weight:bold;
+        }
+
         .view{
             padding:12px;
-            padding-bottom:70px;
+            padding-bottom:80px;
         }
 
         .title{
@@ -65,6 +85,27 @@
             margin-bottom:18px;
             box-shadow:0 3px 10px rgba(0,0,0,0.08);
             border-left:5px solid var(--primary);
+        }
+
+        .status-box{
+            margin-bottom:12px;
+        }
+
+        .status{
+            display:inline-block;
+            padding:8px 14px;
+            border-radius:30px;
+            color:white;
+            font-size:13px;
+            font-weight:bold;
+        }
+
+        .pending{
+            background:#d32f2f;
+        }
+
+        .delivered{
+            background:#28a745;
         }
 
         .info-grid{
@@ -85,6 +126,25 @@
         .info-item p{
             font-size:14px;
             font-weight:600;
+        }
+
+        .phone-row{
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+
+        .call-btn{
+            width:34px;
+            height:34px;
+            border-radius:50%;
+            background:var(--success);
+            color:white;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            text-decoration:none;
+            font-size:14px;
         }
 
         .address-box{
@@ -159,6 +219,77 @@
             opacity:0.9;
         }
 
+        .payment-options{
+            display:none;
+            gap:10px;
+            margin-top:15px;
+        }
+
+        .pay-btn{
+            flex:1;
+            border:none;
+            padding:12px;
+            border-radius:8px;
+            font-weight:bold;
+            cursor:pointer;
+            color:white;
+            font-size:14px;
+        }
+
+        .cash-btn{
+            background:var(--success);
+        }
+
+        .qr-btn{
+            background:var(--blue);
+        }
+
+        .camera-box{
+            display:none;
+            margin-top:15px;
+            text-align:center;
+            border:2px solid var(--success);
+            border-radius:10px;
+            padding:15px;
+            background:white;
+        }
+
+        .camera-box video{
+            width:100%;
+            border-radius:10px;
+            margin-bottom:10px;
+        }
+
+        .camera-box canvas{
+            width:100%;
+            border-radius:10px;
+            margin-top:10px;
+        }
+
+        .camera-buttons{
+            display:flex;
+            gap:10px;
+            margin-top:10px;
+        }
+
+        .camera-buttons button{
+            flex:1;
+            border:none;
+            padding:10px;
+            border-radius:8px;
+            color:white;
+            font-weight:bold;
+            cursor:pointer;
+        }
+
+        .capture-btn{
+            background:var(--primary);
+        }
+
+        .close-camera{
+            background:#444;
+        }
+
         .qr-box{
             display:none;
             margin-top:15px;
@@ -186,8 +317,15 @@
             margin-bottom:10px;
         }
 
-        .qr-box small{
-            font-size:14px;
+        .close-qr{
+            margin-top:12px;
+            background:#444;
+            color:white;
+            border:none;
+            padding:10px 20px;
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:bold;
         }
 
         .empty-msg{
@@ -198,6 +336,7 @@
         }
 
         @media(max-width:600px){
+
             .info-grid{
                 grid-template-columns:1fr;
             }
@@ -209,251 +348,637 @@
             .verify-btn{
                 width:100%;
             }
+
+            .payment-options{
+                flex-direction:column;
+            }
+
+            .camera-buttons{
+                flex-direction:column;
+            }
         }
+
     </style>
+
 </head>
 
 <body>
 
     <!-- HEADER -->
+
     <div class="header">
-        <h1>HOMELY BITE</h1>
-        <p>Partner Delivery Dashboard</p>
+
+        <div class="header-top">
+
+            <div>
+                <h1>HOMELY BITE</h1>
+                <p>Partner Delivery Dashboard</p>
+            </div>
+
+            <!-- PARTNER PROFILE -->
+
+            <div class="partner-profile" title="Partner Profile">
+
+                <i class="fas fa-user"></i>
+
+            </div>
+
+        </div>
+
     </div>
 
     <!-- MAIN -->
+
     <div class="view">
 
         <h3 class="title">
+
             <i class="fas fa-route"></i>
+
             Active Deliveries
+
         </h3>
 
         <div id="delivery-list"></div>
 
     </div>
 
-    <script>
+<script>
 
-        // DEMO ORDER AUTO CREATE
-        // REMOVE THIS PART IF YOU ALREADY HAVE ORDERS
+    // SAMPLE ORDERS
 
-        if(!localStorage.getItem("hOrders")){
+    if(!localStorage.getItem("hOrders")){
 
-            const sampleOrders = [
-                {
-                    id: 1001,
-                    otp: 1234,
-                    status: "pending",
-                    itemsHTML: `
-                        • 2 x Veg Burger <br>
-                        • 1 x Cold Drink <br>
-                        • 1 x Fries
-                    `,
-                    totalPrice: "₹299"
-                },
+        const sampleOrders = [
 
-                {
-                    id: 1002,
-                    otp: 5678,
-                    status: "pending",
-                    itemsHTML: `
-                        • 1 x Pizza <br>
-                        • 2 x Coke
-                    `,
-                    totalPrice: "₹499"
+            {
+                id:1001,
+                otp:1234,
+                status:"pending",
+                paymentDone:false,
+
+                itemsHTML:`
+                    • 2 x Veg Burger <br>
+                    • 1 x Fries <br>
+                    • 1 x Cold Drink
+                `,
+
+                totalPrice:"₹299",
+
+                customer:{
+                    name:"Rahul Sharma",
+                    phone:"9876543210",
+                    addr:"Delhi, India"
                 }
-            ];
+            },
 
-            localStorage.setItem("hOrders", JSON.stringify(sampleOrders));
-        }
+            {
+                id:1002,
+                otp:5678,
+                status:"pending",
+                paymentDone:false,
 
-        // DEMO USER
+                itemsHTML:`
+                    • 1 x Pizza <br>
+                    • 2 x Coke
+                `,
 
-        if(!localStorage.getItem("hUser")){
+                totalPrice:"₹499",
 
-            localStorage.setItem("hUser", JSON.stringify({
-                name:"Suraj Pal",
-                phone:"9876543210",
-                addr:"Delhi, India"
-            }));
-        }
-
-        // LOAD PAGE
-
-        window.onload = () => {
-            loadAllOrders();
-        };
-
-        // LOAD ORDERS
-
-        function loadAllOrders(){
-
-            const orders =
-                JSON.parse(localStorage.getItem('hOrders') || "[]");
-
-            const user =
-                JSON.parse(localStorage.getItem('hUser') || '{}');
-
-            const listContainer =
-                document.getElementById('delivery-list');
-
-            // EMPTY
-
-            if(orders.length === 0){
-
-                listContainer.innerHTML = `
-                    <div class="empty-msg">
-                        No active orders found.
-                    </div>
-                `;
-
-                return;
+                customer:{
+                    name:"Aman Verma",
+                    phone:"9999999999",
+                    addr:"Noida, India"
+                }
             }
 
-            // SHOW ORDERS
+        ];
 
-            listContainer.innerHTML = orders.reverse().map(order => `
+        localStorage.setItem("hOrders", JSON.stringify(sampleOrders));
+    }
 
-                <div class="order-card" id="card-${order.id}">
+    // PAGE LOAD
 
-                    <div class="info-grid">
+    window.onload = () => {
 
-                        <div class="info-item">
-                            <b>Customer</b>
-                            <p>${user.name || 'No Name'}</p>
-                        </div>
+        loadAllOrders();
 
-                        <div class="info-item">
-                            <b>Contact</b>
-                            <p>${user.phone || '0000000000'}</p>
-                        </div>
+    };
 
-                    </div>
+    // LOAD ORDERS
 
-                    <div class="address-box">
+    function loadAllOrders(){
 
-                        <div class="info-item">
-                            <b>Address</b>
-                            <p>${user.addr || 'No Address'}</p>
-                        </div>
+        const orders =
+            JSON.parse(localStorage.getItem('hOrders') || "[]");
 
-                    </div>
+        const listContainer =
+            document.getElementById('delivery-list');
 
-                    <div class="items-box">
-                        ${order.itemsHTML}
-                    </div>
+        if(orders.length === 0){
 
-                    <div class="bill-row">
+            listContainer.innerHTML = `
+                <div class="empty-msg">
+                    No active orders found.
+                </div>
+            `;
 
-                        <span>Total Bill</span>
+            return;
+        }
 
-                        <span class="bill-amt">
-                            ${order.totalPrice || '₹0'}
-                        </span>
+        listContainer.innerHTML = orders.reverse().map(order => `
 
-                    </div>
+            <div class="order-card">
 
-                    <div 
-                        id="otp-area-${order.id}" 
-                        style="${order.status === 'delivered' ? 'display:none' : 'block'}"
+                <!-- STATUS -->
+
+                <div class="status-box">
+
+                    <span
+                        id="status-${order.id}"
+                        class="status ${order.status === 'delivered'
+                            ? 'delivered'
+                            : 'pending'}"
                     >
 
-                        <div class="otp-container">
+                        ${order.status === 'delivered'
+                            ? 'DELIVERED'
+                            : 'PENDING PAYMENT'}
 
-                            <input 
-                                type="number"
-                                id="input-otp-${order.id}"
-                                class="otp-input"
-                                placeholder="Enter OTP"
-                            >
+                    </span>
 
-                            <button
-                                class="verify-btn"
-                                onclick="verifyOrder(${order.id}, ${order.otp})"
-                            >
-                                VERIFY
-                            </button>
+                </div>
 
-                        </div>
+                <!-- CUSTOMER -->
+
+                <div class="info-grid">
+
+                    <div class="info-item">
+
+                        <b>Customer</b>
+
+                        <p>
+                            ${order.customer?.name || 'No Name'}
+                        </p>
 
                     </div>
 
-                    <!-- QR SECTION -->
+                    <div class="info-item">
 
-                    <div
-                        class="qr-box"
-                        id="qr-area-${order.id}"
-                        style="${order.status === 'delivered' ? 'display:block' : 'none'}"
-                    >
+                        <b>Contact</b>
 
-                        <span class="confirm-label">
+                        <div class="phone-row">
 
-                            <i class="fas fa-check-circle"></i>
+                            <p>
+                                ${order.customer?.phone || '0000000000'}
+                            </p>
 
-                            CONFIRMED ORDER
+                            <a
+                                href="tel:${order.customer?.phone}"
+                                class="call-btn"
+                            >
+                                <i class="fas fa-phone"></i>
+                            </a>
 
-                            <i class="fas fa-check-double"></i>
-
-                        </span>
-
-                        <img src="https://github.com/avi778-web/Homely-Bite/blob/main/Screenshot%202026-05-24%20115957.png?raw=true" alt="QR Code">
-
-                        <br>
-
-                        <small>
-                            Scan to receive
-                            <b>${order.totalPrice || '₹0'}</b>
-                        </small>
+                        </div>
 
                     </div>
 
                 </div>
 
-            `).join('');
+                <!-- ADDRESS -->
+
+                <div class="address-box">
+
+                    <div class="info-item">
+
+                        <b>Address</b>
+
+                        <p>
+                            ${order.customer?.addr || 'No Address'}
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <!-- ITEMS -->
+
+                <div class="items-box">
+
+                    ${order.itemsHTML}
+
+                </div>
+
+                <!-- BILL -->
+
+                <div class="bill-row">
+
+                    <span>Total Bill</span>
+
+                    <span class="bill-amt">
+
+                        ${order.totalPrice || '₹0'}
+
+                    </span>
+
+                </div>
+
+                <!-- OTP -->
+
+                <div
+                    id="otp-area-${order.id}"
+                    style="${order.paymentDone ? 'display:none' : 'block'}"
+                >
+
+                    <div class="otp-container">
+
+                        <input
+                            type="number"
+                            id="input-otp-${order.id}"
+                            class="otp-input"
+                            placeholder="Enter OTP"
+                        >
+
+                        <button
+                            class="verify-btn"
+                            onclick="verifyOrder(${order.id}, ${order.otp})"
+                        >
+
+                            VERIFY
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <!-- PAYMENT OPTIONS -->
+
+                <div
+                    class="payment-options"
+                    id="payment-options-${order.id}"
+                    style="${order.status === 'otpverified'
+                        ? 'flex'
+                        : 'none'}"
+                >
+
+                    <!-- CASH -->
+
+                    <button
+                        class="pay-btn cash-btn"
+                        onclick="openCamera(${order.id})"
+                    >
+
+                        <i class="fas fa-camera"></i>
+
+                        CASH
+
+                    </button>
+
+                    <!-- QR -->
+
+                    <button
+                        class="pay-btn qr-btn"
+                        onclick="showQR(${order.id})"
+                    >
+
+                        <i class="fas fa-qrcode"></i>
+
+                        QR PAY
+
+                    </button>
+
+                </div>
+
+                <!-- CAMERA -->
+
+                <div
+                    class="camera-box"
+                    id="camera-box-${order.id}"
+                >
+
+                    <h4 style="margin-bottom:10px;">
+
+                        Cash Payment Proof
+
+                    </h4>
+
+                    <video
+                        id="video-${order.id}"
+                        autoplay
+                        playsinline
+                    ></video>
+
+                    <canvas
+                        id="canvas-${order.id}"
+                    ></canvas>
+
+                    <div class="camera-buttons">
+
+                        <button
+                            class="capture-btn"
+                            onclick="capturePhoto(${order.id})"
+                        >
+
+                            TAKE PHOTO
+
+                        </button>
+
+                        <button
+                            class="close-camera"
+                            onclick="closeCamera(${order.id})"
+                        >
+
+                            CLOSE
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <!-- QR BOX -->
+
+                <div
+                    class="qr-box"
+                    id="qr-area-${order.id}"
+                >
+
+                    <span class="confirm-label">
+
+                        <i class="fas fa-qrcode"></i>
+
+                        WAITING FOR PAYMENT
+
+                    </span>
+
+                    <img
+                        src=""
+                        alt="QR Code"
+                    >
+
+                    <br>
+
+                    <small>
+
+                        Customer needs to pay
+
+                        <b>${order.totalPrice || '₹0'}</b>
+
+                    </small>
+
+                    <br><br>
+
+                    <!-- PAYMENT RECEIVED -->
+
+                    <button
+                        class="verify-btn"
+                        onclick="confirmPayment(${order.id})"
+                        style="
+                            width:100%;
+                            background:#28a745;
+                        "
+                    >
+
+                        PAYMENT RECEIVED
+
+                    </button>
+
+                    <br><br>
+
+                    <!-- CLOSE -->
+
+                    <button
+                        class="close-qr"
+                        onclick="closeQR(${order.id})"
+                    >
+
+                        CLOSE QR
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        `).join('');
+
+    }
+
+    // VERIFY OTP
+
+    function verifyOrder(orderId, correctOtp){
+
+        const inputVal =
+            document.getElementById(`input-otp-${orderId}`).value;
+
+        if(inputVal == correctOtp){
+
+            let orders =
+                JSON.parse(localStorage.getItem('hOrders') || "[]");
+
+            orders = orders.map(order => {
+
+                if(order.id === orderId){
+
+                    order.status = 'otpverified';
+
+                }
+
+                return order;
+
+            });
+
+            localStorage.setItem('hOrders', JSON.stringify(orders));
+
+            // HIDE OTP
+
+            document.getElementById(`otp-area-${orderId}`).style.display = 'none';
+
+            // SHOW PAYMENT OPTIONS
+
+            document.getElementById(`payment-options-${orderId}`).style.display = 'flex';
+
+            alert("OTP Verified Successfully!");
+
         }
 
-        // VERIFY OTP
+        else{
 
-        function verifyOrder(orderId, correctOtp){
+            alert("Invalid OTP!");
 
-            const inputVal =
-                document.getElementById(`input-otp-${orderId}`).value;
+        }
 
-            if(inputVal == correctOtp){
+    }
 
-                // UPDATE STATUS
+    // SHOW QR
 
-                let orders =
-                    JSON.parse(localStorage.getItem('hOrders') || "[]");
+    function showQR(orderId){
 
-                orders = orders.map(order => {
+        document.getElementById(`qr-area-${orderId}`).style.display = 'block';
 
-                    if(order.id === orderId){
-                        order.status = 'delivered';
-                    }
+    }
 
-                    return order;
-                });
+    // CLOSE QR
 
-                localStorage.setItem('hOrders', JSON.stringify(orders));
+    function closeQR(orderId){
 
-                // UI UPDATE
+        document.getElementById(`qr-area-${orderId}`).style.display = 'none';
 
-                document.getElementById(`otp-area-${orderId}`).style.display = 'none';
+    }
 
-                document.getElementById(`qr-area-${orderId}`).style.display = 'block';
+    // CONFIRM QR PAYMENT
 
-                alert("Order Verified Successfully!");
+    function confirmPayment(orderId){
 
-            }else{
+        let orders =
+            JSON.parse(localStorage.getItem('hOrders') || "[]");
 
-                alert("Invalid OTP! Try Again.");
+        orders = orders.map(order => {
+
+            if(order.id === orderId){
+
+                order.paymentDone = true;
+
+                order.status = 'delivered';
 
             }
+
+            return order;
+
+        });
+
+        localStorage.setItem('hOrders', JSON.stringify(orders));
+
+        // UPDATE STATUS
+
+        const status =
+            document.getElementById(`status-${orderId}`);
+
+        status.innerHTML = "DELIVERED";
+
+        status.classList.remove('pending');
+
+        status.classList.add('delivered');
+
+        // HIDE QR
+
+        document.getElementById(`qr-area-${orderId}`).style.display = 'none';
+
+        alert("Payment Received Successfully!");
+
+    }
+
+    // OPEN CAMERA
+
+    async function openCamera(orderId){
+
+        const cameraBox =
+            document.getElementById(`camera-box-${orderId}`);
+
+        const video =
+            document.getElementById(`video-${orderId}`);
+
+        cameraBox.style.display = 'block';
+
+        try{
+
+            const stream =
+                await navigator.mediaDevices.getUserMedia({
+                    video:true
+                });
+
+            video.srcObject = stream;
+
+            window[`stream_${orderId}`] = stream;
+
         }
 
-    </script>
+        catch(err){
+
+            alert("Camera Permission Denied!");
+
+        }
+
+    }
+
+    // CAPTURE PHOTO
+
+    function capturePhoto(orderId){
+
+        const video =
+            document.getElementById(`video-${orderId}`);
+
+        const canvas =
+            document.getElementById(`canvas-${orderId}`);
+
+        const ctx =
+            canvas.getContext('2d');
+
+        canvas.width = video.videoWidth;
+
+        canvas.height = video.videoHeight;
+
+        ctx.drawImage(video,0,0);
+
+        // SAVE PAYMENT STATUS
+
+        let orders =
+            JSON.parse(localStorage.getItem('hOrders') || "[]");
+
+        orders = orders.map(order => {
+
+            if(order.id === orderId){
+
+                order.paymentDone = true;
+
+                order.status = 'delivered';
+
+            }
+
+            return order;
+
+        });
+
+        localStorage.setItem('hOrders', JSON.stringify(orders));
+
+        // UPDATE STATUS
+
+        const status =
+            document.getElementById(`status-${order.id}`);
+
+        status.innerHTML = "CASH RECEIVED";
+
+        status.classList.remove('pending');
+
+        status.classList.add('delivered');
+
+        alert("Cash Payment Photo Captured!");
+
+    }
+
+    // CLOSE CAMERA
+
+    function closeCamera(orderId){
+
+        const cameraBox =
+            document.getElementById(`camera-box-${orderId}`);
+
+        cameraBox.style.display = 'none';
+
+        const stream =
+            window[`stream_${orderId}`];
+
+        if(stream){
+
+            stream.getTracks().forEach(track => track.stop());
+
+        }
+
+    }
+
+</script>
 
 </body>
 </html>
