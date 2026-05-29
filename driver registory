@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homely Bite - Delivery Partner</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root{
+            --primary:#d32f2f;
+            --bg:#f2f2f2;
+            --success:#28a745;
+            --blue:#007bff;
+        }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            font-family:'Segoe UI',sans-serif;
+            background:var(--bg);
+            color:#333;
+        }
+
+        .header{
+            background:var(--primary);
+            color:white;
+            padding:14px;
+            text-align:center;
+            position:sticky;
+            top:0;
+            z-index:100;
+            box-shadow:0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header h1{
+            font-size:22px;
+            margin-bottom:4px;
+        }
+
+        .header p{
+            font-size:12px;
+        }
+
+        .view{
+            padding:12px;
+            padding-bottom:70px;
+        }
+
+        .title{
+            margin-bottom:14px;
+            font-size:18px;
+            color:#222;
+        }
+
+        .order-card{
+            background:white;
+            border-radius:12px;
+            padding:14px;
+            margin-bottom:18px;
+            box-shadow:0 3px 10px rgba(0,0,0,0.08);
+            border-left:5px solid var(--primary);
+        }
+
+        .info-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:10px;
+            margin-bottom:10px;
+        }
+
+        .info-item b{
+            font-size:11px;
+            color:#888;
+            text-transform:uppercase;
+            display:block;
+            margin-bottom:3px;
+        }
+
+        .info-item p{
+            font-size:14px;
+            font-weight:600;
+        }
+
+        .address-box{
+            margin-bottom:10px;
+        }
+
+        .address-box p{
+            font-size:13px;
+            line-height:1.4;
+        }
+
+        .items-box{
+            background:#fafafa;
+            border:1px dashed #ccc;
+            border-radius:8px;
+            padding:10px;
+            margin:10px 0;
+            font-size:13px;
+            line-height:1.5;
+        }
+
+        .bill-row{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:10px 0;
+            border-top:1px solid #eee;
+        }
+
+        .bill-row span{
+            font-size:15px;
+            font-weight:bold;
+        }
+
+        .bill-amt{
+            color:var(--success);
+            font-size:20px !important;
+        }
+
+        .otp-container{
+            display:flex;
+            gap:10px;
+            margin-top:12px;
+        }
+
+        .otp-input{
+            flex:1;
+            padding:12px;
+            border-radius:8px;
+            border:2px solid #ddd;
+            outline:none;
+            font-size:16px;
+            text-align:center;
+        }
+
+        .otp-input:focus{
+            border-color:var(--primary);
+        }
+
+        .verify-btn{
+            background:var(--primary);
+            color:white;
+            border:none;
+            padding:12px 18px;
+            border-radius:8px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        .verify-btn:hover{
+            opacity:0.9;
+        }
+
+        .qr-box{
+            display:none;
+            margin-top:15px;
+            text-align:center;
+            border:2px solid var(--blue);
+            border-radius:10px;
+            padding:15px;
+            background:white;
+        }
+
+        .confirm-label{
+            color:var(--blue);
+            font-size:17px;
+            font-weight:bold;
+            display:block;
+            margin-bottom:12px;
+        }
+
+        .qr-box img{
+            width:180px;
+            height:180px;
+            object-fit:cover;
+            border-radius:10px;
+            border:1px solid #ddd;
+            margin-bottom:10px;
+        }
+
+        .qr-box small{
+            font-size:14px;
+        }
+
+        .empty-msg{
+            text-align:center;
+            margin-top:50px;
+            color:#777;
+            font-size:15px;
+        }
+
+        @media(max-width:600px){
+            .info-grid{
+                grid-template-columns:1fr;
+            }
+
+            .otp-container{
+                flex-direction:column;
+            }
+
+            .verify-btn{
+                width:100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>HOMELY BITE</h1>
+        <p>Partner Delivery Dashboard</p>
+    </div>
+
+    <!-- MAIN -->
+    <div class="view">
+
+        <h3 class="title">
+            <i class="fas fa-route"></i>
+            Active Deliveries
+        </h3>
+
+        <div id="delivery-list"></div>
+
+    </div>
+
+    <script>
+
+        // DEMO ORDER AUTO CREATE
+        // REMOVE THIS PART IF YOU ALREADY HAVE ORDERS
+
+        if(!localStorage.getItem("hOrders")){
+
+            const sampleOrders = [
+                {
+                    id: 1001,
+                    otp: 1234,
+                    status: "pending",
+                    itemsHTML: `
+                        • 2 x Veg Burger <br>
+                        • 1 x Cold Drink <br>
+                        • 1 x Fries
+                    `,
+                    totalPrice: "₹299"
+                },
+
+                {
+                    id: 1002,
+                    otp: 5678,
+                    status: "pending",
+                    itemsHTML: `
+                        • 1 x Pizza <br>
+                        • 2 x Coke
+                    `,
+                    totalPrice: "₹499"
+                }
+            ];
+
+            localStorage.setItem("hOrders", JSON.stringify(sampleOrders));
+        }
+
+        // DEMO USER
+
+        if(!localStorage.getItem("hUser")){
+
+            localStorage.setItem("hUser", JSON.stringify({
+                name:"Suraj Pal",
+                phone:"9876543210",
+                addr:"Delhi, India"
+            }));
+        }
+
+        // LOAD PAGE
+
+        window.onload = () => {
+            loadAllOrders();
+        };
+
+        // LOAD ORDERS
+
+        function loadAllOrders(){
+
+            const orders =
+                JSON.parse(localStorage.getItem('hOrders') || "[]");
+
+            const user =
+                JSON.parse(localStorage.getItem('hUser') || '{}');
+
+            const listContainer =
+                document.getElementById('delivery-list');
+
+            // EMPTY
+
+            if(orders.length === 0){
+
+                listContainer.innerHTML = `
+                    <div class="empty-msg">
+                        No active orders found.
+                    </div>
+                `;
+
+                return;
+            }
+
+            // SHOW ORDERS
+
+            listContainer.innerHTML = orders.reverse().map(order => `
+
+                <div class="order-card" id="card-${order.id}">
+
+                    <div class="info-grid">
+
+                        <div class="info-item">
+                            <b>Customer</b>
+                            <p>${user.name || 'No Name'}</p>
+                        </div>
+
+                        <div class="info-item">
+                            <b>Contact</b>
+                            <p>${user.phone || '0000000000'}</p>
+                        </div>
+
+                    </div>
+
+                    <div class="address-box">
+
+                        <div class="info-item">
+                            <b>Address</b>
+                            <p>${user.addr || 'No Address'}</p>
+                        </div>
+
+                    </div>
+
+                    <div class="items-box">
+                        ${order.itemsHTML}
+                    </div>
+
+                    <div class="bill-row">
+
+                        <span>Total Bill</span>
+
+                        <span class="bill-amt">
+                            ${order.totalPrice || '₹0'}
+                        </span>
+
+                    </div>
+
+                    <!-- OTP SECTION -->
+
+                    <div 
+                        id="otp-area-${order.id}" 
+                        style="${order.status === 'delivered' ? 'display:none' : 'block'}"
+                    >
+
+                        <div class="otp-container">
+
+                            <input 
+                                type="number"
+                                id="input-otp-${order.id}"
+                                class="otp-input"
+                                placeholder="Enter OTP"
+                            >
+
+                            <button
+                                class="verify-btn"
+                                onclick="verifyOrder(${order.id}, ${order.otp})"
+                            >
+                                VERIFY
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- QR SECTION -->
+
+                    <div
+                        class="qr-box"
+                        id="qr-area-${order.id}"
+                        style="${order.status === 'delivered' ? 'display:block' : 'none'}"
+                    >
+
+                        <span class="confirm-label">
+
+                            <i class="fas fa-check-circle"></i>
+
+                            CONFIRMED ORDER
+
+                            <i class="fas fa-check-double"></i>
+
+                        </span>
+
+                        <!-- QR IMAGE -->
+
+                        <img src="c:\Users\Deepak Singh\Pictures\Screenshots\Screenshot 2026-05-24 115957.png" alt="QR Code">
+
+                        <br>
+
+                        <small>
+                            Scan to receive
+                            <b>${order.totalPrice || '₹0'}</b>
+                        </small>
+
+                    </div>
+
+                </div>
+
+            `).join('');
+        }
+
+        // VERIFY OTP
+
+        function verifyOrder(orderId, correctOtp){
+
+            const inputVal =
+                document.getElementById(`input-otp-${orderId}`).value;
+
+            if(inputVal == correctOtp){
+
+                // UPDATE STATUS
+
+                let orders =
+                    JSON.parse(localStorage.getItem('hOrders') || "[]");
+
+                orders = orders.map(order => {
+
+                    if(order.id === orderId){
+                        order.status = 'delivered';
+                    }
+
+                    return order;
+                });
+
+                localStorage.setItem('hOrders', JSON.stringify(orders));
+
+                // UI UPDATE
+
+                document.getElementById(`otp-area-${orderId}`).style.display = 'none';
+
+                document.getElementById(`qr-area-${orderId}`).style.display = 'block';
+
+                alert("Order Verified Successfully!");
+
+            }else{
+
+                alert("Invalid OTP! Try Again.");
+
+            }
+        }
+
+    </script>
+
+</body>
+</html>
